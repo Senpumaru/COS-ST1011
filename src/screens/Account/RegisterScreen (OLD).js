@@ -89,7 +89,7 @@ export default function RegisterScreen({ location, history }) {
     const dispatch = useDispatch()
     const redirect = location.search ? location.search.split("=")[1] : "/"
 
-    const userRegister = useSelector(state => state.User["userRegister"])
+    const userRegister = useSelector(state => state.Profile["userRegister"])
     const { loading, error, userInfo } = userRegister
 
     useEffect(() => {

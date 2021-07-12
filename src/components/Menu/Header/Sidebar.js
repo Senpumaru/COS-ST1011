@@ -53,7 +53,7 @@ function Sidebar() {
     const classes = useStyles();
 
     /*** Redux States ***/
-    const userLogin = useSelector(state => state.User["userLogin"])
+    const userLogin = useSelector(state => state.Profile["userLogin"])
     const { userInfo } = userLogin
 
     /*** Local States ***/
@@ -97,23 +97,15 @@ function Sidebar() {
                         <React.Fragment>
                             <List component="div" disablePadding>
 
-                                {userInfo["application_rights"]["ST0001"] === true &&
-                                    <ListItem component={Link} to="/ST0001" button className={classes.nested}>
+                                {userInfo["application_rights"]["ST1011"] === true &&
+                                    <ListItem component={Link} to="/ST1011" button className={classes.nested}>
                                         <ListItemIcon>
                                             <AirplayIcon />
                                         </ListItemIcon>
                                         <ListItemText primary="ИГХ: ALK" />
                                     </ListItem>}
                             </List>
-                            <List component="div" disablePadding>
-                                {userInfo["application_rights"]["ST0002"] === true &&
-                                    <ListItem component={Link} to="/ST0002" button className={classes.nested}>
-                                        <ListItemIcon>
-                                            <AirplayIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="ИГХ: PD-L1" />
-                                    </ListItem>}
-                            </List>
+                           
                         </React.Fragment> : null}
                 </Collapse>
             </List>

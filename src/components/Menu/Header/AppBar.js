@@ -14,7 +14,7 @@ import { useHistory } from 'react-router-dom';
 import { logout } from "../../../actions/Account/UserActions";
 import logo from "../../../images/logo/ACS.png";
 import Sidebar from "./Sidebar";
-
+import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 const drawerWidth = 220;
 /*** Material UI Styles ***/
 const useStyles = makeStyles(theme => ({
@@ -59,7 +59,7 @@ export default function App() {
     const classes = useStyles();
 
     /*** Redux States ***/
-    const userLogin = useSelector(state => state.User["userLogin"])
+    const userLogin = useSelector(state => state.Profile["userLogin"])
     const { userInfo } = userLogin
 
     const dispatch = useDispatch()
@@ -105,14 +105,14 @@ export default function App() {
                     </IconButton>
                     <img alt="App Logo" src={logo} className={classes.logo} />
                     <Typography variant="h6" hidden={isMdUp ? false : true} noWrap>
-                        Система сервисов
+                        ИГХ: ALK
                     </Typography>
                     <section className={classes.rightToolbar} >
                         {userInfo
                             ?
                             <div hidden={isSmUp ? false : true}>
-                                <Button color="inherit" >{userInfo.first_name} {userInfo.last_name} </Button>
-                                <Button onClick={logoutHandler} color="inherit">Logout</Button>
+                                <Button color="inherit" >{userInfo["first_name"]} {userInfo["last_name"]} </Button>
+                                <Button onClick={logoutHandler} color="inherit" endIcon={<PowerSettingsNewIcon/>}>Выйти</Button>
                                 <Button color="inherit" ><strong>RU</strong></Button>
                             </div>
                             : null}

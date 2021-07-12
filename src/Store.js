@@ -2,50 +2,42 @@ import { applyMiddleware, combineReducers, createStore } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import thunk from "redux-thunk"
 import { userLoginReducer, userRegisterReducer } from './reducers/Accounts/UserReducers'
-import { approvalUpdateReducerST0001, caseCreateReducerST0001, caseDetailsReducerALK, caseListReducerALK, caseStatisticsReducerALK, caseTransferReducerST0001, caseUpdateReducerALK } from './reducers/Services/ALK/CaseReducers'
-import { searchReducerALK } from "./reducers/Services/ALK/SearchReducers"
-import { caseCreateReducerPDL1, caseDetailsReducerPDL1, caseListReducerPDL1, caseUpdateReducerPDL1 } from './reducers/Services/PDL1/CaseReducers'
-import { searchReducerPDL1 } from "./reducers/Services/PDL1/SearchReducers"
+import { approvalUpdateReducer, caseCreateReducer, caseDetailsReducer, caseAddendumReducer, caseListReducer, caseStatisticsReducer, caseTransferReducer, caseUpdateReducer } from './reducers/Cases/CaseReducers'
+import { searchReducerALK } from "./reducers/Cases/SearchReducers"
+
 
 
 
 /*** All reducers ***/
 const reducer = combineReducers({
-    User: combineReducers({
+    Profile: combineReducers({
         userRegister: userRegisterReducer,
         userLogin: userLoginReducer,
     }),
-    ALK: combineReducers({
-        caseCreate: caseCreateReducerST0001,
-        caseDetails: caseDetailsReducerALK,
-        caseUpdate: caseUpdateReducerALK,
-        caseTransfer: caseTransferReducerST0001,
-        caseList: caseListReducerALK,
-        caseStatistics: caseStatisticsReducerALK,
-        approvalUpdate: approvalUpdateReducerST0001,
+    ST1011: combineReducers({
+        caseCreate: caseCreateReducer,
+        caseDetails: caseDetailsReducer,
+        caseUpdate: caseUpdateReducer,
+        caseTransfer: caseTransferReducer,
+        caseAddendum: caseAddendumReducer,
+        caseList: caseListReducer,
+        caseStatistics: caseStatisticsReducer,
+        approvalUpdate: approvalUpdateReducer,
         searchParameters: searchReducerALK,
     }),
-
-    PDL1: combineReducers({
-        caseCreate: caseCreateReducerPDL1,
-        caseDetails: caseDetailsReducerPDL1,
-        caseUpdate: caseUpdateReducerPDL1,
-        caseList: caseListReducerPDL1,
-        searchParameters: searchReducerPDL1,
-    })
 })
 
-/* User Storage */
+/* Profile Storage */
 const userInfoFromStorage = sessionStorage.getItem('userInfo') ?
     JSON.parse(sessionStorage.getItem('userInfo')) : null
 
 const initialState = {
-    User: {
+    Profile: {
         userLogin: {
             userInfo: userInfoFromStorage
         }
     },
-    ALK: {
+    ST1011: {
         caseStatistics: {
             caseStats: {
                 cases_count: 0,

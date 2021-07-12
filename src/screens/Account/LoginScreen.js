@@ -60,7 +60,7 @@ export default function LoginScreen({ location, history }) {
     const dispatch = useDispatch()
     const redirect = location.search ? location.search.split("=")[1] : "/"
 
-    const userLogin = useSelector(state => state.User["userLogin"])
+    const userLogin = useSelector(state => state.Profile["userLogin"])
     const { loading, error, userInfo } = userLogin
 
     useEffect(() => {

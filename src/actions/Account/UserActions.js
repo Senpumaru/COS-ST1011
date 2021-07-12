@@ -22,7 +22,6 @@ import {
     USER_UPDATE_SUCCESS
 } from '../../constants/Accounts/UserConstants'
 
-// import { ORDER_LIST_MY_RESET } from '../constants/orderConstants'
 
 export const login = (email, password, remember) => async (dispatch) => {
     try {
@@ -36,11 +35,20 @@ export const login = (email, password, remember) => async (dispatch) => {
             }
         }
 
+        // Get USER information
         const { data } = await axios.post(
             '/api/account/login/',
             { 'email': email, 'password': password },
             config
         )
+
+        // Get USER PERMISSION
+        const permissions = await axios.get(
+            `api/ST1011/permissions/${data.id}`,
+            config
+        )
+
+        data["credentials"] = permissions.data
 
         dispatch({
             type: USER_LOGIN_SUCCESS,
@@ -64,9 +72,9 @@ export const login = (email, password, remember) => async (dispatch) => {
 }
 
 export const logout = () => (dispatch) => {
-    // Remove User data from network storage
+    // Remove Profile data from network storage
     sessionStorage.removeItem("userInfo")
-    // Remove User data from "STORE"
+    // Remove Profile data from "STORE"
     dispatch({ type: USER_LOGOUT })
     dispatch({ type: USER_DETAILS_RESET })
 }
