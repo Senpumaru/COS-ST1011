@@ -90,7 +90,7 @@ export default function LoginScreen({ location, history }) {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Вход
+                Вход в приложение ИГХ: PD-L1
         </Typography>
                 <form className={classes.form} onSubmit={submitHandler}>
                     <TextField

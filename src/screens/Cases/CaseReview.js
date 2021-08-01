@@ -253,31 +253,26 @@ function CaseReview({ history, match }) {
                       </Grid>
 
                       <Grid item md={4} sm={4} xs={12}>
-                        <Typography>Микроскопическое описание: </Typography>
+                        <Typography>Показатель экспрессии PD-L1 опухолевыми клетками: </Typography>
                       </Grid>
                       <Grid item md={8} sm={8} xs={12}>
                         <Typography>
                           {" "}
-                          {instance.microscopic_description}
+                          {instance.cancer_cell_percentage + "%"} 
                         </Typography>
                       </Grid>
 
                       <Grid item md={4} sm={4} xs={12}>
-                        <Typography>Гистологическое описание: </Typography>
+                        <Typography>Показатель экспрессии PD-L1 иммунными клетками: </Typography>
                       </Grid>
                       <Grid item md={8} sm={8} xs={12}>
                         <Typography>
                           {" "}
-                          {instance.histological_description}
+                          {instance.immune_cell_percentage + "%"}
                         </Typography>
                       </Grid>
 
-                      <Grid item md={4} sm={4} xs={12}>
-                        <Typography>Паттерн окраски: </Typography>
-                      </Grid>
-                      <Grid item md={8} sm={8} xs={12}>
-                        <Typography> {instance.staining_pattern}</Typography>
-                      </Grid>
+                      
 
                       <Grid item md={4} sm={4} xs={12}>
                         <Typography>Клиническая интерпретация: </Typography>

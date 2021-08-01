@@ -241,7 +241,7 @@ function RowExpansion(props) {
           {row.date_of_registration}
         </TableCell>
         <TableCell className={classes.tableCell} align="left">
-          {row.case_code}
+          {row.personal_number}
         </TableCell>
         <TableCell className={classes.tableCell} align="left">
           {row.date_of_report}
@@ -453,7 +453,7 @@ function RowExpansion(props) {
                 <IconButton
                   className={classes.tableButton}
                   component={Link}
-                  to={`/ST1011/Case/${row.institution_code}/${row.order_number}/Archive/`}
+                  to={`/ST1011/Case/${row.personal_number}/Archive/`}
                 >
                   <Tooltip title="Архивы" aria-label="edit">
                     <FindInPageIcon className={classes.icons} />

@@ -27,6 +27,7 @@ const useRowStyles = makeStyles({
 function CaseArchive({ history, match }) {
   /*** Material UI Styles ***/
   const classes = useRowStyles();
+  console.log(match.params)
 
   /*** Local States ***/
   const [loadingArchive, setLoadingArchive] = useState(true);
@@ -42,7 +43,7 @@ function CaseArchive({ history, match }) {
   const getCaseArchive = async () => {
     const response = await axios
       .get(
-        `/api/ST1011/cases/${match.params.code}/${match.params.number}/archive/`
+        `/api/ST1011/cases/${match.params.personalNumber}/archive/`
       )
       .then((response) => {
         const allCases = response.data;
@@ -100,7 +101,7 @@ function CaseArchive({ history, match }) {
     <React.Fragment>
       <Box p={2}>
         <Typography className={classes.screenTitle}>
-          Архивы кейса: {match.params.code}-{match.params.number}
+          Архивы кейса: {match.params.personalNumber}
         </Typography>
         {loadingArchive && <Loader></Loader>}
         <Grid container>{Versions()}</Grid>

@@ -72,7 +72,7 @@ function CaseTable() {
                     Дата регистрации
                   </TableCell>
                   <TableCell padding="none" align="left">
-                    Код
+                    Личный номер
                   </TableCell>
                   <TableCell padding="none" align="left">
                     Дата заключения

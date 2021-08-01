@@ -84,7 +84,7 @@ function App() {
                 <AppProtectedRoute exact path="/ST1011" application="ST1011" component={CaseBoard} />
                 <AppProtectedRoute exact path="/ST1011/Case/:id" application="ST1011" component={CaseUpdateForm} />
                 <AppProtectedRoute exact path="/ST1011/Case/Review/:id" application="ST1011" component={CaseReview} />
-                <AppProtectedRoute exact path="/ST1011/Case/:code/:number/Archive" application="ST1011" component={CaseArchive} />
+                <AppProtectedRoute exact path="/ST1011/Case/:personalNumber/Archive" application="ST1011" component={CaseArchive} />
                 
               </main>
             </div>

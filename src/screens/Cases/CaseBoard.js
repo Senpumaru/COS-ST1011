@@ -92,7 +92,7 @@ function Dashboard() {
 
   return (
     <React.Fragment>
-      <Typography className={classes.appTitle}>ИГХ: ALK</Typography>
+      <Typography className={classes.appTitle}>ИГХ: PD-L1</Typography>
       <TabContext value={tabValue}>
         <TabList onChange={handleTabValue} aria-label="Menu">
           <Tab label="Кейсы" value="Cases" />

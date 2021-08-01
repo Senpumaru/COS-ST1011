@@ -54,35 +54,36 @@ const useStyles = makeStyles({
 /*** CHOICES ***/
 const INSTITUTION_CHOICES = [
   {
-    value: 328112,
+    value: "УЗ «Брестский областной онкологический диспансер»",
+    label: "УЗ «Брестский областной онкологический диспансер»",
+  },
+  {
+    value: "УЗ «Гомельский областной клинический онкологический диспансер»",
     label: "УЗ «Гомельский областной клинический онкологический диспансер»",
   },
   {
-    value: 328044,
+    value: "УЗ «Витебский областной клинический онкологический диспансер»",
     label: "УЗ «Витебский областной клинический онкологический диспансер»",
   },
   {
-    value: 328043,
+    value: "УЗ «Могилёвский областной онкологический диспансер»",
     label: "УЗ «Могилёвский областной онкологический диспансер»",
   },
   {
-    value: 327933,
+    value: "УЗ «Гродненский областной онкологический диспансер»",
+    label: "УЗ «Гродненский областной онкологический диспансер»",
+  },
+  {
+    value: "УЗ «Минский городской клинический онкологический диспансер»",
     label: "УЗ «Минский городской клинический онкологический диспансер»",
   },
   {
-    value: 327932,
-    label: "РНПЦ ОМР им. Н.Н. Александрова",
-  },
-];
-
-const CASE_CHOICES = [
-  {
-    value: "Гранулярное цитоплазматическое окрашивание опухолевых клеток высокой интенсивности не определяется",
-    label: "Гранулярное окрашивание высокой интенсивности не определяется",
+    value: "УЗ «Барановичский онкологический диспансер»",
+    label: "УЗ «Барановичский онкологический диспансер»",
   },
   {
-    value: "В большинстве опухолевых клеток определяется гранулярное цитоплазматическое окрашивание высокой интенсивности",
-    label: "В большинстве определяется окрашивание высокой интенсивности",
+    value: "УЗ «Бобруйский межрайонный онкологический диспансер»",
+    label: "УЗ «Бобруйский межрайонный онкологический диспансер»",
   },
 ];
 
@@ -92,7 +93,7 @@ function UpdateForm({ history, match }) {
 
   /*** Local States ***/
   /* Registration Data */
-  const [orderNumber, setOrderNumber] = useState("");
+
   const [blockCodeList, setBlockCodeList] = useState([{ blockCode: "" }]);
   const [slideCodeList, setSlideCodeList] = useState([{ slideCode: "" }]);
 
@@ -168,8 +169,16 @@ function UpdateForm({ history, match }) {
       const pathologists = await axios(`/api/ST1011/pathologists`);
       const consultants = await axios(`/api/ST1011/consultants`);
 
-      setConsultants(consultants.data.map(function (item) {return item.user}));
-      setPathologists(pathologists.data.map(function (item) {return item.user}));
+      setConsultants(
+        consultants.data.map(function (item) {
+          return item.user;
+        })
+      );
+      setPathologists(
+        pathologists.data.map(function (item) {
+          return item.user;
+        })
+      );
     };
     fetchData();
   }, []);
@@ -181,8 +190,12 @@ function UpdateForm({ history, match }) {
     } else {
       // Registration Data
       setValue("dateRegistration", instance.date_of_registration);
-      setValue("institutionCode", instance.institution_code);
-      setOrderNumber(instance.order_number);
+      setValue("institution", instance.institution);
+      setValue("personalNumber", instance.personal_number);
+      setValue("lastName", instance.last_name);
+      setValue("middleName", instance.middle_name);
+      setValue("firstName", instance.first_name);
+
       setBlockCodeList(blockCodes);
       setValue("blockCount", instance.block_count);
       setSlideCodeList(slideCodes);
@@ -197,19 +210,8 @@ function UpdateForm({ history, match }) {
       } else {
         setValue("dateReport", new Date());
       }
-      setValue("microscopicDescription", instance.microscopic_description);
-      if (instance.histological_description != null) {
-        setValue("histologicalDescription", instance.histological_description);
-      } else {
-        setValue("histologicalDescription", "");
-      }
-      
-      
-      if (instance.staining_pattern != null) {
-        setValue("stainingPattern", instance.staining_pattern);
-      } else {
-        setValue("stainingPattern", "");
-      }
+      setValue("cancerCellPercentage", instance.cancer_cell_percentage);
+      setValue("immuneCellPercentage", instance.immune_cell_percentage);
 
       if (instance.clinical_interpretation != null) {
         setValue("clinicalInterpretation", instance.clinical_interpretation);
@@ -221,7 +223,6 @@ function UpdateForm({ history, match }) {
 
   /** PUT **/
   const onSubmit = (data, event) => {
-    
     data["uuid"] = caseUUID;
     if (typeof data["dateRegistration"] != "string") {
       data["dateRegistration"] = data["dateRegistration"]
@@ -230,7 +231,7 @@ function UpdateForm({ history, match }) {
     } else {
       data["dateRegistration"] = data["dateRegistration"];
     }
-    data["orderNumber"] = orderNumber;
+
     data["blockCodes"] = blockCodeList.map((a) => a.blockCode);
     data["slideCodes"] = slideCodeList.map((a) => a.slideCode);
     if (caseEditor != null) {
@@ -264,9 +265,7 @@ function UpdateForm({ history, match }) {
   };
 
   /* Form submission */
-  const defaultValues = {
-    histologicalDescription: ""
-  }
+  const defaultValues = {};
 
   const {
     handleSubmit,
@@ -277,13 +276,6 @@ function UpdateForm({ history, match }) {
   } = useForm({ mode: "onBlur" }, defaultValues);
 
   /* Validators */
-  const setIdentifier = (event) => {
-    const re = /^[0-9\b]+$/;
-
-    if (event.target.value === "" || re.test(event.target.value)) {
-      setOrderNumber(event.target.value);
-    }
-  };
 
   // Update button control
   function ButtonChoice() {
@@ -422,9 +414,9 @@ function UpdateForm({ history, match }) {
                       />
                     </MuiPickersUtilsProvider>
                   </Grid>
-                  <Grid item md={6} sm={8} xs={12}>
+                  <Grid item md={8} sm={8} xs={12}>
                     <Controller
-                      name="institutionCode"
+                      name="institution"
                       defaultValue={""}
                       control={control}
                       rules={{
@@ -435,12 +427,13 @@ function UpdateForm({ history, match }) {
                           {...field}
                           fullWidth
                           select
+                          name="institution"
                           label="Организация"
                           variant="outlined"
-                          error={errors.institutionCode ? true : false}
+                          error={errors.institution ? true : false}
                           helperText={
-                            errors?.institutionCode
-                              ? errors.institutionCode.message
+                            errors?.institution
+                              ? errors.institution.message
                               : `Code: ${field.value}`
                           }
                         >
@@ -453,20 +446,105 @@ function UpdateForm({ history, match }) {
                       )}
                     />
                   </Grid>
-                  <Grid item md={2} sm={4} xs={12}>
-                    <TextField
-                      required
-                      fullWidth
-                      id="orderNumber"
-                      label="ID"
-                      name="orderNumber"
-                      value={orderNumber}
-                      inputProps={{
-                        maxLength: 4,
+                  <Grid item md={12} sm={12} xs={12}>
+                    <Controller
+                      name="personalNumber"
+                      control={control}
+                      rules={{
+                        required: "Укажите личный номер",
                       }}
-                      color="primary"
-                      variant="outlined"
-                      onChange={setIdentifier}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          required
+                          fullWidth
+                          id="personalNumber-id"
+                          label="Личный номер"
+                          name="personalNumber"
+                          color="primary"
+                          variant="outlined"
+                          error={errors.personalNumber ? true : false}
+                          helperText={
+                            errors?.personalNumber &&
+                            errors.personalNumber.message
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={4} sm={4} xs={12}>
+                    <Controller
+                      name="lastName"
+                      control={control}
+                      rules={{
+                        required: "Обязательное поле",
+                      }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          required
+                          fullWidth
+                          id="lastName-id"
+                          label="Фамилия"
+                          name="lastName"
+                          color="primary"
+                          variant="outlined"
+                          error={errors.lastName ? true : false}
+                          helperText={
+                            errors?.lastName && errors.lastName.message
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={4} sm={4} xs={12}>
+                    <Controller
+                      name="firstName"
+                      control={control}
+                      rules={{
+                        required: "Обязательное поле",
+                      }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          required
+                          fullWidth
+                          id="firstName-id"
+                          label="Имя"
+                          name="firstName"
+                          color="primary"
+                          variant="outlined"
+                          error={errors.firstName ? true : false}
+                          helperText={
+                            errors?.firstName && errors.firstName.message
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={4} sm={4} xs={12}>
+                    <Controller
+                      name="middleName"
+                      control={control}
+                      rules={{
+                        required: "Обязательное поле",
+                      }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          required
+                          fullWidth
+                          id="middleName-id"
+                          label="Отчество"
+                          name="middleName"
+                          color="primary"
+                          variant="outlined"
+                          error={errors.middleName ? true : false}
+                          helperText={
+                            errors?.middleName && errors.middleName.message
+                          }
+                        />
+                      )}
                     />
                   </Grid>
                   <Grid item md={12} sm={8} xs={12}>
@@ -558,7 +636,6 @@ function UpdateForm({ history, match }) {
                   </Grid>
                   <Grid item md={12} sm={12} xs={12}>
                     <Autocomplete
-                      
                       id="consultants-id"
                       defaultValue={[]}
                       multiple
@@ -577,7 +654,6 @@ function UpdateForm({ history, match }) {
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          
                           label="Консультанты"
                           name="consultants"
                           placeholder="Выбрать консультантов"
@@ -587,7 +663,6 @@ function UpdateForm({ history, match }) {
                       )}
                     />
                   </Grid>
-                  
                 </Grid>
                 <hr />
                 <Grid
@@ -733,193 +808,154 @@ function UpdateForm({ history, match }) {
                   {instance?.case_editor &&
                   userInfo?.credentials["pathologist"] &&
                   userInfo.id === instance?.case_editor?.id ? (
-                    
-                      <React.Fragment>
-                        <Typography
-                          className={classes.cardTitle}
-                          color="textSecondary"
-                          gutterBottom
-                        >
-                          <strong>Форма заключения</strong>
-                        </Typography>
-                        <Grid container spacing={1}>
-                          <Grid item md={6} sm={12} xs={12}>
-                            <Controller
-                              name="microscopicDescription"
-                              defaultValue={""}
-                              control={control}
-                              rules={{
-                                required: "Обязталеьное поле",
-                                maxLength: {
-                                  value: 500,
-                                  message: "Вы вышли за лимит символов",
-                                },
-                              }}
-                              render={({ field }) => (
-                                <TextField
-                                  {...field}
-                                  fullWidth
-                                  multiline
-                                  rowsMax="5"
-                                  
-                                  label="Микроскопическое описание"
-                                  name="microscopicDescription"
-                                  // value={microscopicDescription}
-                                  color="primary"
-                                  variant="outlined"
-                                  error={
-                                    errors.microscopicDescription ? true : false
-                                  }
-                                  helperText={
-                                    errors?.microscopicDescription &&
-                                    errors.microscopicDescription.message
-                                  }
-                                  // onChange={(event) => setmicroscopicDescription(event.target.value)}
-                                />
-                              )}
-                            />
-                          </Grid>
-                          <Grid item md={6} sm={12} xs={12}>
-                            <Controller
-                              name="histologicalDescription"
-                              defaultValue={""}
-                              control={control}
-                              rules={{
-                                required: "Обязталеьное поле",
-                                maxLength: {
-                                  value: 500,
-                                  message: "Вы вышли за лимит символов",
-                                },
-                              }}
-                              render={({ field }) => (
-                                <TextField
-                                  {...field}
-                                  fullWidth
-                                  multiline
-                                  rowsMax="5"
-                                  
-                                  label="Гистологическое заключение"
-                                  name="histologicalDescription"
-                                  
-                                  color="primary"
-                                  variant="outlined"
-                                  error={
-                                    errors.histologicalDescription ? true : false
-                                  }
-                                  helperText={
-                                    errors?.histologicalDescription &&
-                                    errors.histologicalDescription.message
-                                  }
-                                  
-                                />
-                              )}
-                            />
-                          </Grid>
-                          <Grid item md={12} s={12} xs={12}>
-                            <Controller
-                              name="stainingPattern"
-                              control={control}
-                              defaultValue=""
-                              rules={{
-                                required: "Обязательное поле",
-                              }}
-                              render={({ field }) => (
-                                <TextField
-                                  {...field}
-                                  
-                                  fullWidth
-                                  select
-                                  helperText=""
-                                  label="Паттерн"
-                                  name="stainingPattern"
-                                  // value={stainingPattern}
-                                  defaultValue=""
-                                  color="primary"
-                                  variant="outlined"
-                                  // onChange={(event) => setstainingPattern(event.target.value)}
-                                >
-                                  {CASE_CHOICES.map((option) => (
-                                    <MenuItem
-                                      key={option.value}
-                                      value={option.value}
-                                    >
-                                      {option.label}
-                                    </MenuItem>
-                                  ))}
-                                </TextField>
-                              )}
-                            />
-                          </Grid>
-                          <Grid item md={4} s={4} xs={4}>
-                            <MuiPickersUtilsProvider
-                              utils={DateFnsUtils}
-                              locale={ruLocale}
-                            >
-                              <Controller
-                                name="dateReport"
-                                control={control}
-                                rules={{
-                                  required: "Обязталеьное поле",
-                                }}
-                                defaultValue={new Date()}
-                                render={({ field: { ref, ...rest } }) => (
-                                  <KeyboardDatePicker
-                                    {...rest}
-                                    fullWidth
-                                    id="date-response"
-                                    label="Дата заключения"
-                                    format="dd/MM/yyyy"
-                                    variant="inline"
-                                    inputVariant="outlined"
-                                    maxDate={new Date()}
-                                    KeyboardButtonProps={{
-                                      "aria-label": "change date",
-                                    }}
-                                  />
-                                )}
-                              />
-                            </MuiPickersUtilsProvider>
-                          </Grid>
-                          
-                          <Grid item md={8} sm={8} xs={12}>
-                            <Controller
-                              name="clinicalInterpretation"
-                              control={control}
-                              defaultValue={""}
-                              rules={{
-                                required: "Обязательное поле",
-                              }}
-                              render={({ field }) => (
-                                <TextField
-                                  {...field}
-                                  
-                                  fullWidth
-                                  select
-                                  name="clinicalInterpretation"
-                                  label="Клиническая интерпретация"
-                                  id="demo-simple-select-outlined"
-                                  // value={clinicalInterpretation}
-                                  defaultValue={""}
-                                  
-                                  variant="outlined"
-                                  error={errors.clinicalInterpretation ? true : false}
-                                  helperText={errors?.clinicalInterpretation && errors.clinicalInterpretation.message}
+                    <React.Fragment>
+                      <Typography
+                        className={classes.cardTitle}
+                        color="textSecondary"
+                        gutterBottom
+                      >
+                        <strong>Форма заключения</strong>
+                      </Typography>
+                      <Grid container spacing={1}>
+                        <Grid item md={12} sm={12} xs={12}>
+                          <Controller
+                            name="clinicalInterpretation"
+                            control={control}
+                            defaultValue={""}
+                            rules={{
+                              required: "Обязательное поле",
+                            }}
+                            render={({ field }) => (
+                              <TextField
+                                {...field}
+                                fullWidth
+                                select
+                                name="clinicalInterpretation"
+                                label="Клиническая интерпретация"
+                                id="demo-simple-select-outlined"
+                                // value={clinicalInterpretation}
+                                defaultValue={""}
+                                variant="outlined"
+                                error={
+                                  errors.clinicalInterpretation ? true : false
+                                }
+                                helperText={
+                                  errors?.clinicalInterpretation &&
+                                  errors.clinicalInterpretation.message
+                                }
 
-                                  // onChange={(event) => setclinicalInterpretation(event.target.value)}
-                                >
-                                  <MenuItem value={"ALK-Positive"}>
-                                    ALK Позитивный
-                                  </MenuItem>
-                                  <MenuItem value={"ALK-Negative"}>
-                                    ALK Негативный
-                                  </MenuItem>
-                                </TextField>
+                                // onChange={(event) => setclinicalInterpretation(event.target.value)}
+                              >
+                                <MenuItem value={"PD-L1 positive"}>
+                                  PD-L1 позитивный
+                                </MenuItem>
+                                <MenuItem value={"PD-L1 negative"}>
+                                  PD-L1 негативный
+                                </MenuItem>
+                              </TextField>
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={6} sm={6} xs={12}>
+                          <Controller
+                            name="immuneCellPercentage"
+                            defaultValue={0}
+                            control={control}
+                            rules={{
+                              required: "Обязательное поле",
+                              pattern: {
+                                value: /\d*/i,
+                                message: "Incorrect pattern",
+                              },
+                            }}
+                            render={({ field }) => (
+                              <TextField
+                                {...field}
+                                fullWidth
+                                inputProps={{
+                                  min: 0,
+                                  max: 100,
+                                  type: "number",
+                                }}
+                                label="Показатель экспрессии PD-L1 опухолевыми клетками"
+                                variant="outlined"
+                                error={
+                                  errors.immuneCellPercentage ? true : false
+                                }
+                                helperText={
+                                  errors?.immuneCellPercentage &&
+                                  errors.immuneCellPercentage.message
+                                }
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item xs={6} sm={6} xs={12}>
+                          <Controller
+                            name="cancerCellPercentage"
+                            defaultValue={0}
+                            control={control}
+                            rules={{
+                              required: "Обязательное поле",
+                              pattern: {
+                                value: /\d*/i,
+                                message: "Incorrect pattern",
+                              },
+                            }}
+                            render={({ field }) => (
+                              <TextField
+                                {...field}
+                                fullWidth
+                                inputProps={{
+                                  min: 0,
+                                  max: 100,
+                                  type: "number",
+                                }}
+                                label="Показатель экспрессии PD-L1 иммунными клетками"
+                                variant="outlined"
+                                error={
+                                  errors.cancerCellPercentage ? true : false
+                                }
+                                helperText={
+                                  errors?.cancerCellPercentage &&
+                                  errors.cancerCellPercentage.message
+                                }
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid item md={4} s={4} xs={4}>
+                          <MuiPickersUtilsProvider
+                            utils={DateFnsUtils}
+                            locale={ruLocale}
+                          >
+                            <Controller
+                              name="dateReport"
+                              control={control}
+                              rules={{
+                                required: "Обязталеьное поле",
+                              }}
+                              defaultValue={new Date()}
+                              render={({ field: { ref, ...rest } }) => (
+                                <KeyboardDatePicker
+                                  {...rest}
+                                  fullWidth
+                                  id="date-response"
+                                  label="Дата заключения"
+                                  format="dd/MM/yyyy"
+                                  variant="inline"
+                                  inputVariant="outlined"
+                                  maxDate={new Date()}
+                                  KeyboardButtonProps={{
+                                    "aria-label": "change date",
+                                  }}
+                                />
                               )}
                             />
-                          </Grid>
+                          </MuiPickersUtilsProvider>
                         </Grid>
-                      </React.Fragment>
-                    
+                      </Grid>
+                    </React.Fragment>
                   ) : (
                     <Box pt={2}>
                       <Alert variant="filled" severity="info">
@@ -932,7 +968,9 @@ function UpdateForm({ history, match }) {
             </CardContent>
             <Box pl={2} pr={2}>
               {successUpdate ? (
-                <Alert variant="filled" severity="success">Обновление успешно!</Alert>
+                <Alert variant="filled" severity="success">
+                  Обновление успешно!
+                </Alert>
               ) : (
                 errorUpdate && <Alert severity="error">{errorUpdate}</Alert>
               )}

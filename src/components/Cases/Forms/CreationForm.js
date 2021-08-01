@@ -31,25 +31,36 @@ import Loader from "../../../components/Loader";
 
 const INSTITUTION_CHOICES = [
   {
-    value: 328112,
+    value: "УЗ «Брестский областной онкологический диспансер»",
+    label: "УЗ «Брестский областной онкологический диспансер»",
+  },
+  {
+    value: "УЗ «Гомельский областной клинический онкологический диспансер»",
     label: "УЗ «Гомельский областной клинический онкологический диспансер»",
   },
   {
-    value: 328044,
+    value: "УЗ «Витебский областной клинический онкологический диспансер»",
     label: "УЗ «Витебский областной клинический онкологический диспансер»",
   },
   {
-    value: 328043,
+    value: "УЗ «Могилёвский областной онкологический диспансер»",
     label: "УЗ «Могилёвский областной онкологический диспансер»",
   },
-
   {
-    value: 327933,
+    value: "УЗ «Гродненский областной онкологический диспансер»",
+    label: "УЗ «Гродненский областной онкологический диспансер»",
+  },
+  {
+    value: "УЗ «Минский городской клинический онкологический диспансер»",
     label: "УЗ «Минский городской клинический онкологический диспансер»",
   },
   {
-    value: 327932,
-    label: "РНПЦ ОМР им. Н.Н. Александрова",
+    value: "УЗ «Барановичский онкологический диспансер»",
+    label: "УЗ «Барановичский онкологический диспансер»",
+  },
+  {
+    value: "УЗ «Бобруйский межрайонный онкологический диспансер»",
+    label: "УЗ «Бобруйский межрайонный онкологический диспансер»",
   },
 ];
 
@@ -74,7 +85,11 @@ function CreationForm() {
   /*** React Hook Form ***/
   const defaultValues = {
     dateRegistration: new Date(),
-    institutionCode: "",
+    institution: "",
+    personalNumber: "",
+    lastName: "",
+    middleName: "",
+    firstName: "",
     diagnosis: "",
     caseEditor: "",
     caseSender: "",
@@ -105,30 +120,29 @@ function CreationForm() {
   } = useFieldArray({ control, name: "slideCodes" });
 
   // Validation
-  const [orderNumber, setPersonalNumber] = useState("");
-  const setOrderNumber = (event) => {
-    const re = /^[0-9\b]+$/;
-
-    if (event.target.value === "" || re.test(event.target.value)) {
-      setPersonalNumber(event.target.value);
-    }
-  };
 
   /* Consultants Autocompletion choices */
   const [pathologistServerList, setPathologistServerList] = useState([]);
   const [consultantServerList, setConsultantServerList] = useState([]);
   // Selected values
   const [pathologistValue, setPathologistValue] = useState("");
-  
+
   const [consultantsValues, setConsultantsValues] = useState([]);
   // Data Fetching
   useEffect(async () => {
     const fetchData = async () => {
       const pathologists = await axios(`/api/ST1011/pathologists`);
       const consultants = await axios(`/api/ST1011/consultants`);
-      setPathologistServerList(pathologists.data.map(function (item) {return item.user}));
-      setConsultantServerList(consultants.data.map(function (item) {return item.user}));
-      
+      setPathologistServerList(
+        pathologists.data.map(function (item) {
+          return item.user;
+        })
+      );
+      setConsultantServerList(
+        consultants.data.map(function (item) {
+          return item.user;
+        })
+      );
     };
     fetchData();
   }, []);
@@ -138,7 +152,7 @@ function CreationForm() {
 
   const onSubmit = (data, event) => {
     setOpenAlert(true);
-    data["orderNumber"] = orderNumber;
+
     if (data["caseEditor"]) {
       data["caseEditor"] = parseInt(data["caseEditor"]["id"]);
     } else {
@@ -154,6 +168,7 @@ function CreationForm() {
     data["slideCodes"] = data["slideCodes"].map((a) => a.slideCode);
 
     dispatch(createCase(data));
+    console.log(data)
     setTimeout(() => {
       setOpenAlert(false);
     }, 6000);
@@ -178,7 +193,7 @@ function CreationForm() {
             justify={"flex-start"}
           >
             <Grid container item xs={12} spacing={1}>
-              <Grid item md={3} sm={4} xs={12}>
+              <Grid item md={4} sm={4} xs={12}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
                   <Controller
                     name="dateRegistration"
@@ -201,9 +216,9 @@ function CreationForm() {
                   />
                 </MuiPickersUtilsProvider>
               </Grid>
-              <Grid item md={7} sm={8} xs={12}>
+              <Grid item md={8} sm={8} xs={12}>
                 <Controller
-                  name="institutionCode"
+                  name="institution"
                   control={control}
                   rules={{
                     required: "Укажите организацию",
@@ -215,10 +230,10 @@ function CreationForm() {
                       select
                       label="Организация"
                       variant="outlined"
-                      error={errors.institutionCode ? true : false}
+                      error={errors.institution ? true : false}
                       helperText={
-                        errors?.institutionCode
-                          ? errors.institutionCode.message
+                        errors?.institution
+                          ? errors.institution.message
                           : `Code: ${field.value}`
                       }
                     >
@@ -231,20 +246,124 @@ function CreationForm() {
                   )}
                 />
               </Grid>
-              <Grid item md={2} sm={4} xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="orderNumber-id"
-                  label="ID"
-                  name="orderNumber"
-                  value={orderNumber}
-                  inputProps={{
-                    maxLength: 4,
+
+              <Grid item md={4} sm={4} xs={12}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
+                  <Controller
+                    name="dateRegistration"
+                    control={control}
+                    render={({ field: { ref, ...rest } }) => (
+                      <KeyboardDatePicker
+                        {...rest}
+                        fullWidth
+                        id="date-registration"
+                        label="Дата рождения"
+                        format="dd/MM/yyyy"
+                        maxDate={new Date()}
+                        variant="inline"
+                        inputVariant="outlined"
+                        KeyboardButtonProps={{
+                          "aria-label": "change date",
+                        }}
+                      />
+                    )}
+                  />
+                </MuiPickersUtilsProvider>
+              </Grid>
+              <Grid item md={8} sm={8} xs={12}>
+                <Controller
+                  name="personalNumber"
+                  control={control}
+                  rules={{
+                    required: "Укажите личный номер",
                   }}
-                  color="primary"
-                  variant="outlined"
-                  onChange={setOrderNumber}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      required
+                      fullWidth
+                      id="personalNumber-id"
+                      label="Личный номер"
+                      name="personalNumber"
+                      color="primary"
+                      variant="outlined"
+                      error={errors.personalNumber ? true : false}
+                      helperText={
+                        errors?.personalNumber && errors.personalNumber.message
+                      }
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item md={4} sm={4} xs={12}>
+                <Controller
+                  name="lastName"
+                  control={control}
+                  rules={{
+                    required: "Обязательное поле",
+                  }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      required
+                      fullWidth
+                      id="lastName-id"
+                      label="Фамилия"
+                      name="lastName"
+                      color="primary"
+                      variant="outlined"
+                      error={errors.lastName ? true : false}
+                      helperText={errors?.lastName && errors.lastName.message}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item md={4} sm={4} xs={12}>
+                <Controller
+                  name="firstName"
+                  control={control}
+                  rules={{
+                    required: "Обязательное поле",
+                  }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      required
+                      fullWidth
+                      id="firstName-id"
+                      label="Имя"
+                      name="firstName"
+                      color="primary"
+                      variant="outlined"
+                      error={errors.firstName ? true : false}
+                      helperText={errors?.firstName && errors.firstName.message}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item md={4} sm={4} xs={12}>
+                <Controller
+                  name="middleName"
+                  control={control}
+                  rules={{
+                    required: "Обязательное поле",
+                  }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      required
+                      fullWidth
+                      id="middleName-id"
+                      label="Отчество"
+                      name="middleName"
+                      color="primary"
+                      variant="outlined"
+                      error={errors.middleName ? true : false}
+                      helperText={
+                        errors?.middleName && errors.middleName.message
+                      }
+                    />
+                  )}
                 />
               </Grid>
               <Grid item md={12} sm={8} xs={12}>
@@ -262,7 +381,7 @@ function CreationForm() {
                       {...field}
                       fullWidth
                       inputProps={{ type: "text" }}
-                      label="Диагноз"
+                      label="Диагноз (направительный)"
                       variant="outlined"
                       error={errors.diagnosis ? true : false}
                       helperText={errors?.diagnosis && errors.diagnosis.message}
@@ -376,7 +495,6 @@ function CreationForm() {
                   )}
                 />
               </Grid>
-              
             </Grid>
           </Grid>
           <hr />
@@ -547,7 +665,6 @@ function CreationForm() {
             onClick={() => {
               reset(defaultValues);
               setPathologistValue("");
-              setPersonalNumber("");
               setConsultantsValues([]);
             }}
             variant="contained"
