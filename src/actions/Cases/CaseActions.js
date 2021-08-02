@@ -32,6 +32,8 @@ import {
   CASE_STATISTICS_FAIL,
 } from "../../constants/Cases/CaseConstants";
 
+const SERVER_URL = process.env.REACT_APP_API_SERVER;
+
 export const createCase = (instance) => async (dispatch, getState) => {
   try {
     dispatch({
@@ -48,7 +50,7 @@ export const createCase = (instance) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.post(
-      "/api/ST1011/cases/create/",
+      SERVER_URL + "api/ST1011/cases/create/",
       instance,
       config // Credentials etc.
     );
@@ -88,7 +90,7 @@ export const caseDetailsAction = (id) => async (dispatch, getState) => {
     };
 
     // ID is specified in API URL
-    const { data } = await axios.get(`/api/ST1011/cases/${id}/update/`, config);
+    const { data } = await axios.get(SERVER_URL + `api/ST1011/cases/${id}/update/`, config);
 
     setTimeout(() => {
       dispatch({
@@ -125,7 +127,7 @@ export const caseTransferAction = (instance) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.put(
-      `/api/ST1011/cases/${instance.uuid}/transfer/`,
+      SERVER_URL + `api/ST1011/cases/${instance.uuid}/transfer/`,
       instance,
       config
     );
@@ -166,7 +168,7 @@ export const approvalUpdateAction =
       };
 
       const { data } = await axios.put(
-        `/api/ST1011/approval/${instance.id}/update/`,
+        SERVER_URL + `api/ST1011/approval/${instance.id}/update/`,
         instance,
         config
       );
@@ -206,7 +208,7 @@ export const caseUpdateAction = (instance) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.put(
-      `/api/ST1011/cases/${instance.uuid}/update/`,
+      SERVER_URL + `api/ST1011/cases/${instance.uuid}/update/`,
       instance,
       config
     );
@@ -255,7 +257,7 @@ export const caseAddendumAction = (uuid) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.put(
-      `/api/ST1011/cases/${uuid}/addendum/`,
+      SERVER_URL + `api/ST1011/cases/${uuid}/addendum/`,
       uuid,
       config
     );
@@ -294,7 +296,7 @@ export const caseDeleteAction = (id) => async (dispatch, getState) => {
       },
     };
 
-    await axios.delete(`/api/ST1011/cases/${id}/update/`, config);
+    await axios.delete(SERVER_URL + `api/ST1011/cases/${id}/update/`, config);
 
     dispatch({
       type: CASE_DELETE_SUCCESS,
@@ -327,7 +329,7 @@ export const listCases = (
       });
       // Promise Async action
 
-      const baseUrl = "/api/ST1011/cases/list/";
+      const baseUrl = SERVER_URL + "api/ST1011/cases/list/";
       const pageVar = `?page=${page}`;
       const pageSizeVar = `&page_size=${pageSize}`;
       const sortColumnVar = `&ordering=${sortColumn}`;
@@ -394,7 +396,7 @@ export const statisticsCases = () => {
         },
       };
 
-      const { data } = await axios.get("/api/ST1011/cases/statistics/", config);
+      const { data } = await axios.get(SERVER_URL + "api/ST1011/cases/statistics/", config);
       // Deliver Promise
 
       setTimeout(() => {

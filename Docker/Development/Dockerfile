@@ -8,6 +8,9 @@ WORKDIR /usr/app
 COPY ./package.json ./
 COPY ./package-lock.json ./
 
+# Environment values
+ENV REACT_APP_API_SERVER=http://0.0.0.0/
+
 # Install React App
 RUN npm ci --silent
 

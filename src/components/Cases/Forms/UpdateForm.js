@@ -87,6 +87,8 @@ const INSTITUTION_CHOICES = [
   },
 ];
 
+const SERVER_URL = process.env.REACT_APP_API_SERVER;
+
 function UpdateForm({ history, match }) {
   const classes = useStyles();
   const caseUUID = match.params.id;
@@ -166,8 +168,8 @@ function UpdateForm({ history, match }) {
 
   useEffect(async () => {
     const fetchData = async () => {
-      const pathologists = await axios(`/api/ST1011/pathologists`);
-      const consultants = await axios(`/api/ST1011/consultants`);
+      const pathologists = await axios(SERVER_URL + `api/ST1011/pathologists`);
+      const consultants = await axios(SERVER_URL + `api/ST1011/consultants`);
 
       setConsultants(
         consultants.data.map(function (item) {

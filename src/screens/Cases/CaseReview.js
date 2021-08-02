@@ -65,6 +65,9 @@ const useStyles = makeStyles({
   },
 });
 
+
+const SERVER_URL = process.env.REACT_APP_API_SERVER;
+
 function CaseReview({ history, match }) {
   const classes = useStyles();
   const caseUUID = match.params.id;
@@ -185,7 +188,7 @@ function CaseReview({ history, match }) {
 
     try {
       await axios
-        .put(`/api/ST1011/cases/${instance.uuid}/review/`, instance, config)
+        .put(SERVER_URL + `api/ST1011/cases/${instance.uuid}/review/`, instance, config)
         .then(function (response) {
           setReviewSuccess(true);
           dispatch(caseDetailsAction(match.params.id));

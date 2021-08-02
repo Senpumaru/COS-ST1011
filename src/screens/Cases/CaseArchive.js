@@ -24,6 +24,9 @@ const useRowStyles = makeStyles({
   },
 });
 
+
+const SERVER_URL = process.env.REACT_APP_API_SERVER;
+
 function CaseArchive({ history, match }) {
   /*** Material UI Styles ***/
   const classes = useRowStyles();
@@ -43,7 +46,7 @@ function CaseArchive({ history, match }) {
   const getCaseArchive = async () => {
     const response = await axios
       .get(
-        `/api/ST1011/cases/${match.params.personalNumber}/archive/`
+        SERVER_URL + `api/ST1011/cases/${match.params.personalNumber}/archive/`
       )
       .then((response) => {
         const allCases = response.data;
@@ -55,7 +58,7 @@ function CaseArchive({ history, match }) {
 
   // PDF Report
   const handleCasePDF = (props) => {
-    window.open(`/api/ST1011/cases/${props}/pdf/`);
+    window.open(SERVER_URL + `api/ST1011/cases/${props}/pdf/`);
   };
 
   function Versions() {
@@ -78,7 +81,7 @@ function CaseArchive({ history, match }) {
                     className={classes.icons}
                     onClick={() =>
                       window.open(
-                        `http://127.0.0.1:8000/api/ST1011/cases/${parameter.uuid}/pdf/`
+                        SERVER_URL + `api/ST1011/cases/${parameter.uuid}/pdf/`
                       )
                     }
                   >

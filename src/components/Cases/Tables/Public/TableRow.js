@@ -65,6 +65,9 @@ const useRowStyles = makeStyles({
   },
 });
 
+
+const SERVER_URL = process.env.REACT_APP_API_SERVER;
+
 function RowExpansion(props) {
   const { row } = props;
 
@@ -220,7 +223,7 @@ function RowExpansion(props) {
 
   // PDF Report
   const handleCasePDF = (event) => {
-    window.open(`http://127.0.0.1:8000/api/ST1011/cases/${row.uuid}/pdf/`);
+    window.open(SERVER_URL + `api/ST1011/cases/${row.uuid}/pdf/`);
   };
 
   return (

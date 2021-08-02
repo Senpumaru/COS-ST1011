@@ -64,6 +64,8 @@ const INSTITUTION_CHOICES = [
   },
 ];
 
+const SERVER_URL = process.env.REACT_APP_API_SERVER;
+
 const useStyles = makeStyles({
   cardTitle: {
     fontSize: 14,
@@ -131,8 +133,8 @@ function CreationForm() {
   // Data Fetching
   useEffect(async () => {
     const fetchData = async () => {
-      const pathologists = await axios(`/api/ST1011/pathologists`);
-      const consultants = await axios(`/api/ST1011/consultants`);
+      const pathologists = await axios(SERVER_URL + `api/ST1011/pathologists`);
+      const consultants = await axios(SERVER_URL + `api/ST1011/consultants`);
       setPathologistServerList(
         pathologists.data.map(function (item) {
           return item.user;
