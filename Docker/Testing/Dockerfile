@@ -14,6 +14,10 @@ RUN npm ci --silent
 # Copy 
 COPY . .
 
+ARG REACT_APP_API_SERVER
+
+ENV REACT_APP_API_SERVER $REACT_APP_API_SERVER
+
 # Node build app
 RUN npm run build
 
