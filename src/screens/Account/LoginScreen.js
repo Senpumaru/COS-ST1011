@@ -87,11 +87,8 @@ export default function LoginScreen({ location, history }) {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <h1>Test: process.env.REACT_APP_DEBUG</h1>
-        <h1>Test: process.env.REACT_APP_HOST_IP_ADDRESS</h1>
-        <h1>Test: process.env.REACT_APP_NAME</h1>
         <Typography component="h1" variant="h5">
-          Вход в  ИГХ: PD-L1
+          Вход в приложение ИГХ: PD-L1
         </Typography>
         <form className={classes.form} onSubmit={submitHandler}>
           <TextField
