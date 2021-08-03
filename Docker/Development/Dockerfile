@@ -4,6 +4,11 @@ FROM node:16.5.0-alpine as Node
 # Working directory
 WORKDIR /usr/app
 
+## Dependencies ##
+RUN apk update \
+    # Git
+    && apk add git
+
 # Copy dependencies
 COPY ./package.json ./
 COPY ./package-lock.json ./
