@@ -1,6 +1,5 @@
 {
-  "name": "ST1011",
-  "proxy": "http://127.0.0.1:8000",
+  "name": "st1011",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
