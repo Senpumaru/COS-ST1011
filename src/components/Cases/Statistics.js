@@ -35,8 +35,6 @@ function Statistics() {
   const caseStatistics = useSelector((state) => state.ST1011["caseStatistics"]);
   const { errorStats, loadingStats, caseStats } = caseStatistics;
 
-  console.log(caseStats["statistics"]);
-
   return (
     <React.Fragment>
       <Grid alignItems="center" container spacing={2}>

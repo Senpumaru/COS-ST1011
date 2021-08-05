@@ -198,14 +198,14 @@ function CreationForm() {
               <Grid item md={4} sm={4} xs={12}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
                   <Controller
-                    name="dateRegistration"
+                    name="dateAcquisition"
                     control={control}
                     render={({ field: { ref, ...rest } }) => (
                       <KeyboardDatePicker
                         {...rest}
                         fullWidth
-                        id="date-registration"
-                        label="Дата регистрации"
+                        id="date-acquisition"
+                        label="Дата направления"
                         format="dd/MM/yyyy"
                         maxDate={new Date()}
                         variant="inline"
