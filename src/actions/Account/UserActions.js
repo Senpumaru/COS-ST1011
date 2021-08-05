@@ -45,7 +45,7 @@ export const login = (email, password, remember) => async (dispatch) => {
 
         // Get USER PERMISSION
         const permissions = await axios.get(
-            `api/ST1011/permissions/${data.id}`,
+            SERVER_URL + `api/ST1011/permissions/${data.id}`,
             config
         )
 
