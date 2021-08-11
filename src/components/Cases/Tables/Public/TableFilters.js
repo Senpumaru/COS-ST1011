@@ -78,7 +78,6 @@ const INSTITUTION_CHOICES = [
     value: 328043,
     label: "УЗ «Могилёвский областной онкологический диспансер»",
   },
-
   {
     value: 327933,
     label: "УЗ «Минский городской клинический онкологический диспансер»",
@@ -159,7 +158,7 @@ function TableFilters() {
                     autoOk
                     variant="inline"
                     inputVariant="outlined"
-                    label="Дата регистрации (от)"
+                    label="Дата получения (от)"
                     maxDate={filters.dateRegisterLTE}
                     maxDateMessage={"Неправильно выбрана дата"}
                     value={filters.dateRegisterGTE}
@@ -174,7 +173,7 @@ function TableFilters() {
                     autoOk
                     variant="inline"
                     inputVariant="outlined"
-                    label="Дата регистрации (до)"
+                    label="Дата поучения (до)"
                     maxDate={new Date()}
                     value={filters.dateRegisterLTE}
                     onChange={handleFilterDateRegisterLTE}
@@ -239,7 +238,7 @@ function TableFilters() {
 
         <Grid item md={6} sm={6} xs={6}>
           <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-outlined-label">
+            <InputLabel id="case-sorter-id">
               Сортировка
             </InputLabel>
             <Select
@@ -249,10 +248,10 @@ function TableFilters() {
               onChange={handleChangeSort}
               label="Сортировка"
             >
-              <MenuItem value="date_of_registration">
+              <MenuItem value="date_of_acquisition">
                 <em>По умолчанию</em>
               </MenuItem>
-              <MenuItem value={"date_of_registration"}>
+              <MenuItem value={"date_of_acquisition"}>
                 <div
                   style={{
                     display: "flex",
@@ -260,11 +259,11 @@ function TableFilters() {
                     flexWrap: "wrap",
                   }}
                 >
-                  Дата регистрации
+                  Дата получения
                   <ArrowUpwardIcon fontSize="small" />
                 </div>
               </MenuItem>
-              <MenuItem value={"-date_of_registration"}>
+              <MenuItem value={"-date_of_acquisition"}>
                 <div
                   style={{
                     display: "flex",
@@ -272,7 +271,7 @@ function TableFilters() {
                     flexWrap: "wrap",
                   }}
                 >
-                  Дата регистрации
+                  Дата получения
                   <ArrowDownwardIcon fontSize="small" />
                 </div>
               </MenuItem>

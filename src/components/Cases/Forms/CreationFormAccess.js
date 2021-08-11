@@ -5,15 +5,19 @@ import CloseIcon from "@material-ui/icons/Close";
 import EditIcon from "@material-ui/icons/Edit";
 import Alert from "@material-ui/lab/Alert";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import CreationForm from "./CreationForm";
 
 /*** Material UI Styles ***/
 const useStyles = makeStyles({
-  icons: {
-    padding: 3,
+  fabStyle: {
+    height: 25,
+    width: 80,
+    verticalAlign: "middle",
   },
-
+  icons: {
+    padding: 2,
+  },
   modalForm: {
     overflow: "scroll",
   },
@@ -25,12 +29,6 @@ const useStyles = makeStyles({
 function CreationFormAccess() {
   /*** Material UI Styles ***/
   const classes = useStyles();
-
-  /*** Redux States ***/
-  const dispatch = useDispatch();
-
-  const caseList = useSelector((state) => state.ST1011["caseList"]);
-  const { error, loading, cases } = caseList;
 
   /*** Local States ***/
   const [openForm, setOpenForm] = useState(false);
@@ -61,7 +59,7 @@ function CreationFormAccess() {
           }}
         >
           <Tooltip title="Создать новый кейс">
-            <Fab onClick={handleOpenForm} variant="extended">
+            <Fab className={classes.fabStyle} onClick={handleOpenForm} variant="extended">
               Кейс
               <EditIcon className={classes.icons} fontSize="small" />
             </Fab>

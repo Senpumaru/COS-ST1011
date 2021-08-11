@@ -4,17 +4,10 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle,
-  FormControlLabel,
-  FormLabel,
-  Grid,
-  IconButton,
-  ListItemIcon,
-  Radio,
-  RadioGroup,
-  Snackbar,
+  DialogTitle, Grid,
+  IconButton, Snackbar,
   TableCell,
-  Tooltip,
+  Tooltip
 } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Collapse from "@material-ui/core/Collapse";
@@ -22,10 +15,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import TableRow from "@material-ui/core/TableRow";
 import CloseIcon from "@material-ui/icons/Close";
 import EditIcon from "@material-ui/icons/Edit";
+import FindInPageIcon from "@material-ui/icons/FindInPage";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import PictureAsPdfIcon from "@material-ui/icons/PictureAsPdf";
+import ListAltIcon from "@material-ui/icons/ListAlt";
 import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
+import RateReviewIcon from "@material-ui/icons/RateReview";
 import SyncIcon from "@material-ui/icons/Sync";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,12 +29,10 @@ import { Link } from "react-router-dom";
 import {
   approvalUpdateAction,
   caseAddendumAction,
-  caseTransferAction,
+  caseTransferAction
 } from "../../../../actions/Cases/CaseActions";
+import DialogApproval from "../../../Dialogs/DialogApproval";
 import Extension from "./Row/Extension";
-import ListAltIcon from "@material-ui/icons/ListAlt";
-import FindInPageIcon from "@material-ui/icons/FindInPage";
-import RateReviewIcon from "@material-ui/icons/RateReview";
 /*** Material UI Styles ***/
 const useRowStyles = makeStyles({
   tableRow: {
@@ -64,7 +58,6 @@ const useRowStyles = makeStyles({
     backgroundColor: "#F2AA4CFF",
   },
 });
-
 
 const SERVER_URL = process.env.REACT_APP_API_SERVER;
 
@@ -144,8 +137,7 @@ function RowExpansion(props) {
       editingAction = true;
     } else if (
       userInfo["credentials"]["registrar"] === true &&
-      (userInfo.id === row?.case_creator?.id ||
-        userInfo.id === row?.case_assistant?.id) &&
+      (userInfo.id === row?.case_creator?.id || userInfo.id === row?.case_assistant?.id) &&
       row?.clinical_interpretation === null
     ) {
       editingAction = true;
@@ -177,7 +169,7 @@ function RowExpansion(props) {
     }
   }
 
-  const [openApprovalAlert, setOpenApprovalAlert] = React.useState(false);
+  const [openApprovalDialogue, setOpenApprovalDialogue] = useState(false);
   // Check if case is approved already
   var checkApprovalConsulant = row.case_approvals.filter((obj) => {
     return obj.consultant === userInfo.id;
@@ -186,11 +178,11 @@ function RowExpansion(props) {
   var checkApproval = checkApprovalConsulant[0]?.approval;
 
   const handleOpenApproveAlert = () => {
-    setOpenApprovalAlert(true);
+    setOpenApprovalDialogue(true);
   };
 
   const handleCloseApproveAlert = () => {
-    setOpenApprovalAlert(false);
+    setOpenApprovalDialogue(false);
   };
 
   const [approvalChoice, setApprovalChoice] = useState("");
@@ -204,7 +196,7 @@ function RowExpansion(props) {
     data["id"] = checkApprovalConsulant[0]?.id;
     data["approvalChoice"] = approvalChoice;
     dispatch(approvalUpdateAction(data));
-    setOpenApprovalAlert(false);
+    setOpenApprovalDialogue(false);
   };
 
   /* Case Review */
@@ -228,12 +220,7 @@ function RowExpansion(props) {
 
   return (
     <React.Fragment>
-      <TableRow
-        hover
-        className={classes.tableCell}
-        className={classes.tableRow}
-        id={row.uuid}
-      >
+      <TableRow hover className={classes.tableCell} className={classes.tableRow} id={row.uuid}>
         <TableCell className={classes.tableCell}>
           <IconButton aria-label="expand row" size="small" onClick={caseExpand}>
             {openRow ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -241,7 +228,7 @@ function RowExpansion(props) {
         </TableCell>
 
         <TableCell className={classes.tableCell} align="left">
-          {row.date_of_registration}
+          {row.date_of_acquisition}
         </TableCell>
         <TableCell className={classes.tableCell} align="left">
           {row.personal_number}
@@ -255,18 +242,20 @@ function RowExpansion(props) {
         </TableCell>
         {row ? (
           <TableCell className={classes.tableCell} align="left">
-            <Grid
-              container
-              direction="row"
-              justify="flex-end"
-              alignItems="flex-end"
-              spacing={0}
-            >
+            <Grid container direction="row" justify="flex-end" alignItems="flex-end" spacing={0}>
+              <Grid item>
+                <IconButton
+                  className={classes.tableButton}
+                  // onClick={() => handleOpenApproveAlert()}
+                >
+                  <Tooltip title="Отказ кейса" aria-label="transfer">
+                    <HighlightOffIcon className={classes.icons} />
+                  </Tooltip>
+                </IconButton>
+              </Grid>
               <Grid item>
                 {userInfo["credentials"]["consultant"] &&
-                  row.case_approvals
-                    .map((a) => a.consultant)
-                    .includes(userInfo.id) &&
+                  row.case_approvals.map((a) => a.consultant).includes(userInfo.id) &&
                   row.clinical_interpretation != null &&
                   row.version_state === "In-progress" && (
                     <IconButton
@@ -280,76 +269,13 @@ function RowExpansion(props) {
                   )}
               </Grid>
               <React.Fragment>
-                <Dialog
-                  open={openApprovalAlert}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
-                >
-                  <DialogTitle
-                    className={classes.dialogTitle}
-                    id="alert-dialog-title"
-                  >
-                    {"Утверждение кейса"}
-                    <IconButton
-                      aria-label="close"
-                      className={classes.icons}
-                      onClick={handleCloseApproveAlert}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                      Любое изменение в заключении данного кейса со стороны
-                      патолога приведет к обнулению вашего решения. Можете
-                      поменять решение в любое время до публикации данной версии
-                      кейса. При утверждении кейса всеми консультантами, кейс
-                      будет доступен для
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                    <FormLabel component="legend">Выбор</FormLabel>
-                    <RadioGroup
-                      aria-label="approval"
-                      name="approval"
-                      value={approvalChoice}
-                      onChange={handleApprovalChoice}
-                    >
-                      <Grid container>
-                        <Grid>
-                          <FormControlLabel
-                            value={"Yes"}
-                            control={<Radio />}
-                            label="Утверждаю"
-                          />
-                        </Grid>
-                        <Grid item>
-                          <FormControlLabel
-                            value={"No"}
-                            control={<Radio />}
-                            label="Не утверждаю"
-                          />
-                        </Grid>
-                      </Grid>
-                    </RadioGroup>
-                    <Button
-                      onClick={approveCase}
-                      color="secondary"
-                      variant="contained"
-                    >
-                      Ответ
-                    </Button>
-                  </DialogActions>
-                </Dialog>
+                <DialogApproval open={openApprovalDialogue} />
               </React.Fragment>
               <Grid item>
                 {userInfo["credentials"]["registrar"] && row.case_creator ? (
                   row.case_creator["ST1011_Permission"]["clinician"] &&
                   row?.case_assistant === null && (
-                    <IconButton
-                      className={classes.tableButton}
-                      onClick={handleOpenTransferDialog}
-                    >
+                    <IconButton className={classes.tableButton} onClick={handleOpenTransferDialog}>
                       <Tooltip title="Трансфер кейса" aria-label="transfer">
                         <SyncIcon className={classes.icons} />
                       </Tooltip>
@@ -365,31 +291,22 @@ function RowExpansion(props) {
                   aria-labelledby="alert-dialog-title"
                   aria-describedby="alert-dialog-description"
                 >
-                  <DialogTitle
-                    className={classes.dialogTitle}
-                    id="transfer-dialog-title"
-                  >
+                  <DialogTitle className={classes.dialogTitle} id="transfer-dialog-title">
                     {"Трансфер кейса"}
                   </DialogTitle>
                   <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                      Вы хотите произвести трансфер кейса (стать ассистентом)
-                      клинициста:
+                      Вы хотите произвести трансфер кейса (стать ассистентом) клинициста:
                       <strong>
                         {" "}
-                        {row.case_creator["last_name"] +
-                          " " +
-                          row.case_creator["first_name"]}
+                        {row.case_creator &&
+                          row.case_creator["last_name"] + " " + row?.case_creator["first_name"]}
                       </strong>
                       ?
                     </DialogContentText>
                   </DialogContent>
                   <DialogActions>
-                    <Button
-                      onClick={handleCloseTransferDialog}
-                      variant="outlined"
-                      color="primary"
-                    >
+                    <Button onClick={handleCloseTransferDialog} variant="outlined" color="primary">
                       Отмена
                     </Button>
                     <Button
@@ -439,18 +356,17 @@ function RowExpansion(props) {
                 )}
               </Grid>
               <Grid item>
-                {row.clinical_interpretation != null &&
-                  row.case_consultants.length > 0 && (
-                    <IconButton
-                      className={classes.tableButton}
-                      component={Link}
-                      to={`/ST1011/Case/Review/${row.uuid}`}
-                    >
-                      <Tooltip title="Обзор кейса" aria-label="edit">
-                        <ListAltIcon className={classes.icons} />
-                      </Tooltip>
-                    </IconButton>
-                  )}
+                {row.clinical_interpretation != null && row.case_consultants.length > 0 && (
+                  <IconButton
+                    className={classes.tableButton}
+                    component={Link}
+                    to={`/ST1011/Case/Review/${row.uuid}`}
+                  >
+                    <Tooltip title="Обзор кейса" aria-label="edit">
+                      <ListAltIcon className={classes.icons} />
+                    </Tooltip>
+                  </IconButton>
+                )}
               </Grid>
               <Grid item>
                 <IconButton
@@ -465,10 +381,7 @@ function RowExpansion(props) {
               </Grid>
               {row.version_state === "Verified" && editorExists && (
                 <Grid item>
-                  <IconButton
-                    className={classes.tableButton}
-                    onClick={handleOpenAddendumDialog}
-                  >
+                  <IconButton className={classes.tableButton} onClick={handleOpenAddendumDialog}>
                     <Tooltip title="Поправка" aria-label="modify">
                       <RateReviewIcon className={classes.icons} />
                     </Tooltip>
@@ -479,19 +392,15 @@ function RowExpansion(props) {
                       aria-labelledby="alert-dialog-title"
                       aria-describedby="alert-dialog-description"
                     >
-                      <DialogTitle
-                        className={classes.dialogTitle}
-                        id="transfer-dialog-title"
-                      >
+                      <DialogTitle className={classes.dialogTitle} id="transfer-dialog-title">
                         Поправка отчета (создание новой версии)
                       </DialogTitle>
                       <DialogContent>
                         <DialogContentText id="alert-dialog-description">
                           <strong>Внимание!</strong>
                           <br />
-                          Данное действие приведет к переведению в архив
-                          нынешней версии отчета . Новая версия кейса будет
-                          создана и будет требовать утверждения предыдущих
+                          Данное действие приведет к переведению в архив нынешней версии отчета .
+                          Новая версия кейса будет создана и будет требовать утверждения предыдущих
                           консультантов (новых, если потребуется).
                         </DialogContentText>
                       </DialogContent>

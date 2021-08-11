@@ -8,8 +8,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Alert from "@material-ui/lab/Alert";
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 import Loader from "../../../../components/Loader";
 import Filters from "./TableFilters";
 import RowExpansion from "./TableRow";
@@ -40,22 +40,8 @@ function CaseTable() {
   const classes = useStyles();
 
   /*** Redux States ***/
-  const dispatch = useDispatch();
-
   const caseList = useSelector((state) => state.ST1011["caseList"]);
   const { error, loading, cases } = caseList;
-  
-
-  /*** Local States ***/
-  const [openForm, setOpenForm] = useState(false);
-
-  const handleOpenForm = () => {
-    setOpenForm(true);
-  };
-
-  const handleCloseForm = () => {
-    setOpenForm(false);
-  };
 
   return (
     <React.Fragment>
@@ -69,7 +55,7 @@ function CaseTable() {
                 <TableRow>
                   <TableCell />
                   <TableCell padding="none" align="left">
-                    Дата регистрации
+                    Дата получения
                   </TableCell>
                   <TableCell padding="none" align="left">
                     Личный номер
@@ -100,9 +86,7 @@ function CaseTable() {
                 ))}
               </TableBody>
             </Table>
-            {cases.results.length === 0 && (
-              <Typography align="center">Нет данных</Typography>
-            )}
+            {cases.results.length === 0 && <Typography align="center">Нет данных</Typography>}
           </TableContainer>
         )}
       </Box>

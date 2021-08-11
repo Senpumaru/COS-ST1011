@@ -126,7 +126,7 @@ function CaseReview({ history, match }) {
 
   function ReviewChoice() {
     if (
-      userInfo["credentials"]["pathologist"] === true &&
+      instance["case_editor"] && instance["version_state"] == "In-progress" && instance["case_editor"]["id"] === userInfo.id &&
       instance?.case_approvals?.length > 0
     ) {
       const allApprovals = instance.case_approvals;
@@ -232,12 +232,12 @@ function CaseReview({ history, match }) {
                     </Grid>
                     <Grid container item spacing={1}>
                       <Grid item md={4} sm={4} xs={12}>
-                        <Typography>Дата регистрации: </Typography>
+                        <Typography>Дата получения: </Typography>
                       </Grid>
                       <Grid item md={8} sm={8} xs={12}>
                         <Typography>
                           {" "}
-                          {instance.date_of_registration}
+                          {instance.date_of_acquisition}
                         </Typography>
                       </Grid>
 

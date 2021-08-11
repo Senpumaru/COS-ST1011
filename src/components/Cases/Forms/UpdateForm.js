@@ -191,9 +191,11 @@ function UpdateForm({ history, match }) {
       dispatch(caseDetailsAction(match.params.id));
     } else {
       // Registration Data
-      setValue("dateRegistration", instance.date_of_registration);
+      setValue("dateDispatch", instance.date_of_dispatch);
+      setValue("dateAcquisition", instance.date_of_acquisition);
       setValue("institution", instance.institution);
       setValue("personalNumber", instance.personal_number);
+      setValue("dateBirth", instance.date_of_birth);
       setValue("lastName", instance.last_name);
       setValue("middleName", instance.middle_name);
       setValue("firstName", instance.first_name);
@@ -202,6 +204,7 @@ function UpdateForm({ history, match }) {
       setValue("blockCount", instance.block_count);
       setSlideCodeList(slideCodes);
       setValue("slideCount", instance.slide_count);
+      
       setValue("diagnosis", instance.diagnosis);
       setValue("caseSender", instance.case_sender);
       setCaseEditor(instance.case_editor);
@@ -226,12 +229,29 @@ function UpdateForm({ history, match }) {
   /** PUT **/
   const onSubmit = (data, event) => {
     data["uuid"] = caseUUID;
-    if (typeof data["dateRegistration"] != "string") {
-      data["dateRegistration"] = data["dateRegistration"]
+    // Date of Dispatch
+    if (typeof data["dateDispatch"] != "string") {
+      data["dateDispatch"] = data["dateDispatch"]
         .toISOString()
         .split("T")[0];
     } else {
-      data["dateRegistration"] = data["dateRegistration"];
+      data["dateDispatch"] = data["dateDispatch"];
+    }
+    // Date of Acquisition
+    if (typeof data["dateAcquisition"] != "string") {
+      data["dateAcquisition"] = data["dateAcquisition"]
+        .toISOString()
+        .split("T")[0];
+    } else {
+      data["dateAcquisition"] = data["dateAcquisition"];
+    }
+    // Date of Birth
+    if (typeof data["dateBirth"] != "string") {
+      data["dateBirth"] = data["dateBirth"]
+        .toISOString()
+        .split("T")[0];
+    } else {
+      data["dateBirth"] = data["dateBirth"];
     }
 
     data["blockCodes"] = blockCodeList.map((a) => a.blockCode);
@@ -395,15 +415,19 @@ function UpdateForm({ history, match }) {
                       locale={ruLocale}
                     >
                       <Controller
-                        name="dateRegistration"
-                        defaultValue={new Date()}
+                        name="dateDispatch"
                         control={control}
+                        rules={{
+                          required: "Укажите",
+                        }}
                         render={({ field: { ref, ...rest } }) => (
                           <KeyboardDatePicker
                             {...rest}
                             fullWidth
-                            id="date-registration"
-                            label="Дата регистрации"
+                            animateYearScrolling
+                            defaultChecked={false}
+                            id="dateDispatch-id"
+                            label="Дата направления"
                             format="dd/MM/yyyy"
                             maxDate={new Date()}
                             variant="inline"
@@ -416,7 +440,36 @@ function UpdateForm({ history, match }) {
                       />
                     </MuiPickersUtilsProvider>
                   </Grid>
-                  <Grid item md={8} sm={8} xs={12}>
+                  <Grid item md={4} sm={6} xs={12}>
+                    <MuiPickersUtilsProvider
+                      utils={DateFnsUtils}
+                      locale={ruLocale}
+                    >
+                      <Controller
+                        name="dateAcquisition"
+                        control={control}
+                        rules={{
+                          required: "Укажите",
+                        }}
+                        render={({ field: { ref, ...rest } }) => (
+                          <KeyboardDatePicker
+                            {...rest}
+                            fullWidth
+                            id="dateAcquisition-id"
+                            label="Дата получения материала"
+                            format="dd/MM/yyyy"
+                            maxDate={new Date()}
+                            variant="inline"
+                            inputVariant="outlined"
+                            KeyboardButtonProps={{
+                              "aria-label": "change date",
+                            }}
+                          />
+                        )}
+                      />
+                    </MuiPickersUtilsProvider>
+                  </Grid>
+                  <Grid item md={8} sm={12} xs={12}>
                     <Controller
                       name="institution"
                       defaultValue={""}
@@ -448,7 +501,7 @@ function UpdateForm({ history, match }) {
                       )}
                     />
                   </Grid>
-                  <Grid item md={12} sm={12} xs={12}>
+                  <Grid item md={6} sm={6} xs={12}>
                     <Controller
                       name="personalNumber"
                       control={control}
@@ -474,6 +527,29 @@ function UpdateForm({ history, match }) {
                       )}
                     />
                   </Grid>
+                  <Grid item md={6} sm={6} xs={12}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
+                  <Controller
+                    name="dateBirth"
+                    control={control}
+                    render={({ field: { ref, ...rest } }) => (
+                      <KeyboardDatePicker
+                        {...rest}
+                        fullWidth
+                        id="date-birth"
+                        label="Дата рождения"
+                        format="dd/MM/yyyy"
+                        maxDate={new Date()}
+                        variant="inline"
+                        inputVariant="outlined"
+                        KeyboardButtonProps={{
+                          "aria-label": "change date",
+                        }}
+                      />
+                    )}
+                  />
+                </MuiPickersUtilsProvider>
+              </Grid>
                   <Grid item md={4} sm={4} xs={12}>
                     <Controller
                       name="lastName"
@@ -549,7 +625,7 @@ function UpdateForm({ history, match }) {
                       )}
                     />
                   </Grid>
-                  <Grid item md={12} sm={8} xs={12}>
+                  <Grid item md={12} sm={12} xs={12}>
                     <Controller
                       name="diagnosis"
                       control={control}
@@ -656,6 +732,11 @@ function UpdateForm({ history, match }) {
                       renderInput={(params) => (
                         <TextField
                           {...params}
+                          required
+                          inputProps={{
+                            ...params.inputProps,
+                            required: consultants.length === 0
+                          }}
                           label="Консультанты"
                           name="consultants"
                           placeholder="Выбрать консультантов"
@@ -848,10 +929,10 @@ function UpdateForm({ history, match }) {
 
                                 // onChange={(event) => setclinicalInterpretation(event.target.value)}
                               >
-                                <MenuItem value={"PD-L1 positive"}>
+                                <MenuItem value={"PD-L1 позитивный"}>
                                   PD-L1 позитивный
                                 </MenuItem>
-                                <MenuItem value={"PD-L1 negative"}>
+                                <MenuItem value={"PD-L1 негативный"}>
                                   PD-L1 негативный
                                 </MenuItem>
                               </TextField>

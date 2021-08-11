@@ -86,9 +86,11 @@ function CreationForm() {
 
   /*** React Hook Form ***/
   const defaultValues = {
-    dateRegistration: new Date(),
+    dateDispatch: new Date(),
+    dateAcquisition: new Date(),
     institution: "",
     personalNumber: "",
+    dateBirth: new Date(),
     lastName: "",
     middleName: "",
     firstName: "",
@@ -170,7 +172,7 @@ function CreationForm() {
     data["slideCodes"] = data["slideCodes"].map((a) => a.slideCode);
 
     dispatch(createCase(data));
-    console.log(data)
+    console.log(data);
     setTimeout(() => {
       setOpenAlert(false);
     }, 6000);
@@ -195,16 +197,21 @@ function CreationForm() {
             justify={"flex-start"}
           >
             <Grid container item xs={12} spacing={1}>
-              <Grid item md={4} sm={4} xs={12}>
+              <Grid item md={4} sm={6} xs={12}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
                   <Controller
-                    name="dateAcquisition"
+                    name="dateDispatch"
                     control={control}
+                    rules={{
+                      required: "Укажите",
+                    }}
                     render={({ field: { ref, ...rest } }) => (
                       <KeyboardDatePicker
                         {...rest}
                         fullWidth
-                        id="date-acquisition"
+                        animateYearScrolling
+                        defaultChecked={false}
+                        id="dateDispatch-id"
                         label="Дата направления"
                         format="dd/MM/yyyy"
                         maxDate={new Date()}
@@ -218,7 +225,33 @@ function CreationForm() {
                   />
                 </MuiPickersUtilsProvider>
               </Grid>
-              <Grid item md={8} sm={8} xs={12}>
+              <Grid item md={4} sm={6} xs={12}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
+                  <Controller
+                    name="dateAcquisition"
+                    control={control}
+                    rules={{
+                      required: "Укажите",
+                    }}
+                    render={({ field: { ref, ...rest } }) => (
+                      <KeyboardDatePicker
+                        {...rest}
+                        fullWidth
+                        id="dateAcquisition-id"
+                        label="Дата получения материала"
+                        format="dd/MM/yyyy"
+                        maxDate={new Date()}
+                        variant="inline"
+                        inputVariant="outlined"
+                        KeyboardButtonProps={{
+                          "aria-label": "change date",
+                        }}
+                      />
+                    )}
+                  />
+                </MuiPickersUtilsProvider>
+              </Grid>
+              <Grid item md={8} sm={12} xs={12}>
                 <Controller
                   name="institution"
                   control={control}
@@ -249,29 +282,6 @@ function CreationForm() {
                 />
               </Grid>
 
-              <Grid item md={4} sm={4} xs={12}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
-                  <Controller
-                    name="dateRegistration"
-                    control={control}
-                    render={({ field: { ref, ...rest } }) => (
-                      <KeyboardDatePicker
-                        {...rest}
-                        fullWidth
-                        id="date-registration"
-                        label="Дата рождения"
-                        format="dd/MM/yyyy"
-                        maxDate={new Date()}
-                        variant="inline"
-                        inputVariant="outlined"
-                        KeyboardButtonProps={{
-                          "aria-label": "change date",
-                        }}
-                      />
-                    )}
-                  />
-                </MuiPickersUtilsProvider>
-              </Grid>
               <Grid item md={8} sm={8} xs={12}>
                 <Controller
                   name="personalNumber"
@@ -296,6 +306,29 @@ function CreationForm() {
                     />
                   )}
                 />
+              </Grid>
+              <Grid item md={4} sm={4} xs={12}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
+                  <Controller
+                    name="dateBirth"
+                    control={control}
+                    render={({ field: { ref, ...rest } }) => (
+                      <KeyboardDatePicker
+                        {...rest}
+                        fullWidth
+                        id="date-birth"
+                        label="Дата рождения"
+                        format="dd/MM/yyyy"
+                        maxDate={new Date()}
+                        variant="inline"
+                        inputVariant="outlined"
+                        KeyboardButtonProps={{
+                          "aria-label": "change date",
+                        }}
+                      />
+                    )}
+                  />
+                </MuiPickersUtilsProvider>
               </Grid>
               <Grid item md={4} sm={4} xs={12}>
                 <Controller

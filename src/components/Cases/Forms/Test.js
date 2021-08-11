@@ -55,7 +55,7 @@ function FormCreation() {
     /*** Local States ***/
 
     const [personalNumber, setPersonalNumber] = useState('')
-    const [dateRegistration, setDateRegistration] = useState(new Date())
+    const [dateAcquisition, setDateAcquisition] = useState(new Date())
     const [institution, setInstitution] = useState("")
 
     const [blockNumberList, setBlockNumberList] = useState([{ blockNumber: "" }])
@@ -115,7 +115,7 @@ function FormCreation() {
         event.preventDefault()
         dispatch(createCase({
             "personal_number": personalNumber,
-            "date_of_registration": dateRegistration.toISOString().split('T')[0],
+            "date_of_acquisition": dateAcquisition.toISOString().split('T')[0],
             "institution_code": institution,
             "block_number": blockNumberList,
             "block_amount": blockAmount,
@@ -184,8 +184,8 @@ function FormCreation() {
                                                         fullWidth
                                                         inputVariant="outlined"
                                                         label="Registration Date"
-                                                        value={dateRegistration}
-                                                        onChange={setDateRegistration}
+                                                        value={dateAcquisition}
+                                                        onChange={setDateAcquisition}
                                                         format="yyyy-MM-dd"
                                                     />
                                                 </MuiPickersUtilsProvider>
