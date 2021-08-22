@@ -17,9 +17,9 @@ import {
   CASE_ADDENDUM_REQUEST,
   CASE_ADDENDUM_SUCCESS,
   CASE_ADDENDUM_FAIL,
-  APPROVAL_UPDATE_FAIL,
-  APPROVAL_UPDATE_REQUEST,
-  APPROVAL_UPDATE_SUCCESS,
+  CASE_DECLINE_REQUEST,
+  CASE_DECLINE_SUCCESS,
+  CASE_DECLINE_FAIL,
   CASE_DELETE_REQUEST,
   CASE_DELETE_SUCCESS,
   CASE_DELETE_FAIL,
@@ -29,35 +29,35 @@ import {
   CASE_STATISTICS_REQUEST,
   CASE_STATISTICS_SUCCESS,
   CASE_STATISTICS_FAIL,
+  APPROVAL_UPDATE_FAIL,
+  APPROVAL_UPDATE_REQUEST,
+  APPROVAL_UPDATE_SUCCESS,
 } from "../../constants/Cases/CaseConstants";
 import { createAction, createReducer } from "@reduxjs/toolkit";
 
 const initialCaseCreateState = {};
 
-export const caseCreateReducer = createReducer(
-  initialCaseCreateState,
-  (builder) => {
-    builder
-      .addCase(CASE_CREATE_REQUEST, (state, action) => {
-        state.loadingCreate = true;
-        state.successCreate = false;
-        state.errorCreate = false;
-      })
-      .addCase(CASE_CREATE_SUCCESS, (state, action) => {
-        state.loadingCreate = false;
-        state.successCreate = true;
-        state.instance = action.payload;
-      })
-      .addCase(CASE_CREATE_FAIL, (state, action) => {
-        state.loadingCreate = false;
-        state.successCreate = false;
-        state.errorCreate = action.payload;
-      })
-      .addDefaultCase((state, action) => {
-        state = {};
-      });
-  }
-);
+export const caseCreateReducer = createReducer(initialCaseCreateState, (builder) => {
+  builder
+    .addCase(CASE_CREATE_REQUEST, (state, action) => {
+      state.loadingCreate = true;
+      state.successCreate = false;
+      state.errorCreate = false;
+    })
+    .addCase(CASE_CREATE_SUCCESS, (state, action) => {
+      state.loadingCreate = false;
+      state.successCreate = true;
+      state.instance = action.payload;
+    })
+    .addCase(CASE_CREATE_FAIL, (state, action) => {
+      state.loadingCreate = false;
+      state.successCreate = false;
+      state.errorCreate = action.payload;
+    })
+    .addDefaultCase((state, action) => {
+      state = {};
+    });
+});
 
 export const caseDetailsReducer = (state = { instance: {} }, action) => {
   switch (action.type) {
@@ -148,30 +148,43 @@ export const approvalUpdateReducer = (state = {}, action) => {
   }
 };
 
-export const caseAddendumReducer = createReducer(
-  initialCaseCreateState,
-  (builder) => {
-    builder
-      .addCase(CASE_ADDENDUM_REQUEST, (state, action) => {
-        state.loadingAddendum = true;
-        state.successAddendum = false;
-        state.errorAddendum = false;
-      })
-      .addCase(CASE_ADDENDUM_SUCCESS, (state, action) => {
-        state.loadingAddendum = false;
-        state.successAddendum = true;
-        state.instance = action.payload;
-      })
-      .addCase(CASE_ADDENDUM_FAIL, (state, action) => {
-        state.loadingAddendum = false;
-        state.successAddendum = false;
-        state.errorAddendum = action.payload;
-      })
-      .addDefaultCase((state, action) => {
-        state = {};
-      });
+export const caseAddendumReducer = createReducer(initialCaseCreateState, (builder) => {
+  builder
+    .addCase(CASE_ADDENDUM_REQUEST, (state, action) => {
+      state.loadingAddendum = true;
+      state.successAddendum = false;
+      state.errorAddendum = false;
+    })
+    .addCase(CASE_ADDENDUM_SUCCESS, (state, action) => {
+      state.loadingAddendum = false;
+      state.successAddendum = true;
+      state.instance = action.payload;
+    })
+    .addCase(CASE_ADDENDUM_FAIL, (state, action) => {
+      state.loadingAddendum = false;
+      state.successAddendum = false;
+      state.errorAddendum = action.payload;
+    })
+    .addDefaultCase((state, action) => {
+      state = {};
+    });
+});
+
+export const caseDeclineReducer = (state = {}, action) => {
+  switch (action.type) {
+    case CASE_DECLINE_REQUEST:
+      return { loadingDecline: true };
+
+    case CASE_DECLINE_SUCCESS:
+      return { loadingDecline: false, successDecline: true };
+
+    case CASE_DECLINE_FAIL:
+      return { loadingDecline: false, error: action.payload };
+
+    default:
+      return state;
   }
-);
+};
 
 export const caseDeleteReducer = (state = {}, action) => {
   switch (action.type) {
@@ -188,7 +201,6 @@ export const caseDeleteReducer = (state = {}, action) => {
       return state;
   }
 };
-
 
 const initialState = { cases: [] };
 
@@ -213,7 +225,6 @@ export const caseListReducer = (state = initialState, action) => {
       return state;
   }
 };
-
 
 export const caseStatisticsReducer = (state = {}, action) => {
   switch (action.type) {

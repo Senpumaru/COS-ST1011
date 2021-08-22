@@ -17,6 +17,9 @@ import {
   CASE_DETAILS_REQUEST,
   CASE_DETAILS_RESET,
   CASE_DETAILS_SUCCESS,
+  CASE_DECLINE_FAIL,
+  CASE_DECLINE_REQUEST,
+  CASE_DECLINE_SUCCESS,
   CASE_DELETE_FAIL,
   CASE_DELETE_REQUEST,
   CASE_DELETE_SUCCESS,
@@ -241,6 +244,49 @@ export const caseUpdateAction = (instance) => async (dispatch, getState) => {
   }
 };
 
+export const caseDeclineAction = (instance) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: CASE_DECLINE_REQUEST,
+    });
+
+    const state = getState();
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${state["Profile"].userLogin["userInfo"].access}`,
+      },
+    };
+
+    const { data } = await axios.put(
+      SERVER_URL + `api/ST1011/cases/${instance.uuid}/update/`,
+      instance,
+      config
+    );
+    setTimeout(() => {
+      dispatch({
+        type: CASE_DECLINE_SUCCESS,
+        payload: data,
+      });
+    }, 1000);
+
+    dispatch({
+      type: CASE_DETAILS_RESET,
+    });
+  } catch (error) {
+    setTimeout(() => {
+      dispatch({
+        type: CASE_DECLINE_FAIL,
+        payload:
+          error.response && error.response.data.Detail
+            ? error.response.data.Detail
+            : error.message,
+      });
+    }, 2000);
+  }
+};
+
 export const caseAddendumAction = (uuid) => async (dispatch, getState) => {
   try {
     dispatch({
@@ -261,6 +307,7 @@ export const caseAddendumAction = (uuid) => async (dispatch, getState) => {
       uuid,
       config
     );
+    
     setTimeout(() => {
       dispatch({
         type: CASE_ADDENDUM_SUCCESS,
@@ -316,8 +363,8 @@ export const listCases = (
   page = 1,
   pageSize = 10,
   sortColumn = "date_of_acquisition",
-  filterDateRegisterGTE = null,
-  filterDateRegisterLTE = null,
+  filterDateAcquisitionGTE = null,
+  filterDateAcquisitionLTE = null,
   filterInstitution = ""
 ) => {
   return async function (dispatch, getState) {
@@ -333,16 +380,21 @@ export const listCases = (
       const pageVar = `?page=${page}`;
       const pageSizeVar = `&page_size=${pageSize}`;
       const sortColumnVar = `&ordering=${sortColumn}`;
-      const filterDateRegisterGTEVar = `&date_of_acquisition_gte=${filterDateRegisterGTE}`;
-      const filterDateRegisterLTEVar = `&date_of_acquisition_lte=${filterDateRegisterLTE}`;
+      var filterDateAcquisitionVarGTE = "";
+      if (filterDateAcquisitionGTE != null) {
+        filterDateAcquisitionVarGTE = `&date_of_acquisition_gte=${filterDateAcquisitionGTE}`;
+      } else {
+        filterDateAcquisitionVarGTE = "";
+      }
+      const filterDateAcquisitionVarLTE = `&date_of_acquisition_lte=${filterDateAcquisitionLTE}`;
       const filterInstitutionVar = `&institution_code=${filterInstitution}`;
 
       const url = baseUrl.concat(
         pageVar,
         pageSizeVar,
         sortColumnVar,
-        filterDateRegisterGTEVar,
-        filterDateRegisterLTEVar,
+        filterDateAcquisitionVarGTE,
+        filterDateAcquisitionVarLTE,
         filterInstitutionVar
       );
 

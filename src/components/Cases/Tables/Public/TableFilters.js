@@ -25,8 +25,8 @@ import {
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setSearchFilterDateRegisterGTE,
-  setSearchFilterDateRegisterLTE,
+  setSearchFilterDateRegisterGTE as setSearchFilterDateAcquisitionGTE,
+  setSearchFilterDateRegisterLTE as setSearchFilterDateAcquisitionLTE,
   setSearchFilterinstitution,
   setSearchPage,
   setSearchPageSize,
@@ -116,11 +116,11 @@ function TableFilters() {
   };
 
   // Date Picker
-  const handleFilterDateRegisterGTE = (event) => {
-    dispatch(setSearchFilterDateRegisterGTE(event));
+  const handleFilterDateAcquisitionGTE = (event) => {
+    dispatch(setSearchFilterDateAcquisitionGTE(event));
   };
-  const handleFilterDateRegisterLTE = (event) => {
-    dispatch(setSearchFilterDateRegisterLTE(event));
+  const handleFilterDateAcquisitionLTE = (event) => {
+    dispatch(setSearchFilterDateAcquisitionLTE(event));
   };
 
   const handleFilterinstitution = (event) => {
@@ -159,10 +159,10 @@ function TableFilters() {
                     variant="inline"
                     inputVariant="outlined"
                     label="Дата получения (от)"
-                    maxDate={filters.dateRegisterLTE}
+                    maxDate={filters.dateAcquisitionGTE}
                     maxDateMessage={"Неправильно выбрана дата"}
-                    value={filters.dateRegisterGTE}
-                    onChange={handleFilterDateRegisterGTE}
+                    value={filters.dateAcquisitionGTE}
+                    onChange={handleFilterDateAcquisitionGTE}
                     format="dd/MM/yyyy"
                   />
                 </MuiPickersUtilsProvider>
@@ -175,8 +175,8 @@ function TableFilters() {
                     inputVariant="outlined"
                     label="Дата поучения (до)"
                     maxDate={new Date()}
-                    value={filters.dateRegisterLTE}
-                    onChange={handleFilterDateRegisterLTE}
+                    value={filters.dateAcquisitionLTE}
+                    onChange={handleFilterDateAcquisitionLTE}
                     format="dd/MM/yyyy"
                   />
                 </MuiPickersUtilsProvider>

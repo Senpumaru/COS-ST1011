@@ -1,4 +1,4 @@
-import { Container, Grid, TableCell, TableRow, Typography } from "@material-ui/core";
+import { Button, Container, Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import React from "react";
 
@@ -28,9 +28,18 @@ function Extension(props) {
 
   return (
     <Container maxWidth="xl">
-      <Typography className={classes.expansionTitle} gutterBottom component="div">
-        Номер кейса: {row.personal_number}
-      </Typography>
+      <Grid container direction="row" alignItems="stretch">
+        <Grid item sm={6}>
+          <Typography className={classes.expansionTitle} gutterBottom component="div">
+            Номер кейса: {row.personal_number}
+          </Typography>
+        </Grid>
+        <Grid item sm={6}>
+          <Typography className={classes.expansionTitle} gutterBottom component="div">
+            Версия кейса: {row.version.toFixed(2)}
+          </Typography>
+        </Grid>
+      </Grid>
 
       <Grid container spacing={1}>
         <Grid container item md={8} xs={8}>
@@ -106,23 +115,48 @@ function Extension(props) {
             </div>
           </Grid>
         </Grid>
+        <Grid>
+          <Button>Комментарий</Button>
+        </Grid>
       </Grid>
-      <Grid container spacing={1}>
-        <Grid item md={4} xs={12}>
-          Создатель:{" "}
-          {row.case_creator && row.case_creator["last_name"] + " " + row.case_creator["first_name"]}
+      <hr />
+      <Grid container direction="row" alignItems="stretch" spacing={1}>
+        <Grid item md={4} sm={6} xs={12}>
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <Typography className={classes.expansionSubTitle} noWrap>
+              Создатель:
+            </Typography>
+            <Typography className={classes.expansionSubText} style={{ marginLeft: 10 }} noWrap>
+              {row.case_creator && row.case_creator["last_name"] + " " + row.case_creator["first_name"]}
+            </Typography>
+          </div>
         </Grid>
 
-        {row?.case_assistant ? (
-          <Grid item md={4} xs={12}>
-            Оформил кейс: {row.case_assistant["last_name"] + " " + row.case_assistant["first_name"]}
+        {row.case_assistant && (
+          <Grid item md={4} sm={6} xs={12}>
+            <div style={{ display: "flex", alignItems: "baseline" }}>
+              <Typography className={classes.expansionSubTitle} noWrap>
+                Оформил кейс:
+              </Typography>
+              <Typography className={classes.expansionSubText} style={{ marginLeft: 10 }} noWrap>
+                {row.case_assistant["last_name"] + " " + row.case_assistant["first_name"]}
+              </Typography>
+            </div>
           </Grid>
-        ) : null}
+        )}
 
-        <Grid item md={4} xs={12}>
-          Назначенный патолог:{" "}
-          {row.case_editor && row.case_editor["last_name"] + " " + row.case_editor["first_name"]}
-        </Grid>
+        {row.case_editor && (
+          <Grid item md={4} xs={12}>
+            <div style={{ display: "flex", alignItems: "baseline" }}>
+              <Typography className={classes.expansionSubTitle} noWrap>
+                Назначенный патолог:
+              </Typography>
+              <Typography className={classes.expansionSubText} style={{ marginLeft: 10 }} noWrap>
+                {row.case_editor && row.case_editor["last_name"] + " " + row.case_editor["first_name"]}
+              </Typography>
+            </div>
+          </Grid>
+        )}
       </Grid>
     </Container>
   );

@@ -1,3 +1,4 @@
+import DialogDelete from "../../Dialogs/DialogDelete";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   Box,
@@ -17,21 +18,15 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Alert from "@material-ui/lab/Alert";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import axios from "axios";
 import ruLocale from "date-fns/locale/ru";
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  caseDeleteAction,
-  caseDetailsAction,
-  caseUpdateAction,
-} from "../../../actions/Cases/CaseActions";
+import { caseDeleteAction, caseDetailsAction, caseUpdateAction } from "../../../actions/Cases/CaseActions";
 import Loader from "../../Loader";
+import DialogDecline from "../../Dialogs/DialogDecline";
 
 const useStyles = makeStyles({
   cardTitle: {
@@ -204,7 +199,7 @@ function UpdateForm({ history, match }) {
       setValue("blockCount", instance.block_count);
       setSlideCodeList(slideCodes);
       setValue("slideCount", instance.slide_count);
-      
+
       setValue("diagnosis", instance.diagnosis);
       setValue("caseSender", instance.case_sender);
       setCaseEditor(instance.case_editor);
@@ -231,25 +226,19 @@ function UpdateForm({ history, match }) {
     data["uuid"] = caseUUID;
     // Date of Dispatch
     if (typeof data["dateDispatch"] != "string") {
-      data["dateDispatch"] = data["dateDispatch"]
-        .toISOString()
-        .split("T")[0];
+      data["dateDispatch"] = data["dateDispatch"].toISOString().split("T")[0];
     } else {
       data["dateDispatch"] = data["dateDispatch"];
     }
     // Date of Acquisition
     if (typeof data["dateAcquisition"] != "string") {
-      data["dateAcquisition"] = data["dateAcquisition"]
-        .toISOString()
-        .split("T")[0];
+      data["dateAcquisition"] = data["dateAcquisition"].toISOString().split("T")[0];
     } else {
       data["dateAcquisition"] = data["dateAcquisition"];
     }
     // Date of Birth
     if (typeof data["dateBirth"] != "string") {
-      data["dateBirth"] = data["dateBirth"]
-        .toISOString()
-        .split("T")[0];
+      data["dateBirth"] = data["dateBirth"].toISOString().split("T")[0];
     } else {
       data["dateBirth"] = data["dateBirth"];
     }
@@ -271,19 +260,18 @@ function UpdateForm({ history, match }) {
     dispatch(caseUpdateAction(data));
   };
 
+  /** DECLINE **/
+  const [openDeclineDialog, setOpenDeclineDialog] = React.useState(false);
+
+  const handleOpenDeclineDialog = () => {
+    setOpenDeclineDialog(true);
+  };
+
   /** DELETE **/
-  const [openDeleteAlert, setOpenDeleteAlert] = React.useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
-  const handleOpenDeleteAlert = () => {
-    setOpenDeleteAlert(true);
-  };
-
-  const handleCloseDeleteAlert = () => {
-    setOpenDeleteAlert(false);
-  };
-  const deleteCase = () => {
-    dispatch(caseDeleteAction(instance.uuid));
-    history.push("/ST1011");
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteDialog(true);
   };
 
   /* Form submission */
@@ -300,30 +288,20 @@ function UpdateForm({ history, match }) {
   /* Validators */
 
   // Update button control
-  function ButtonChoice() {
+  function UpdateButtonChoice() {
     if (instance) {
-      if (
-        userInfo.credentials["pathologist"] &&
-        userInfo.id === instance?.case_editor?.id
-      ) {
+      if (userInfo.credentials["pathologist"] && userInfo.id === instance?.case_editor?.id) {
         return (
           <Button variant="contained" type="submit" color="primary">
             Оформить кейс
           </Button>
         );
       } else if (
-        (userInfo.credentials["registrar"] ||
-          userInfo.credentials["clinician"]) &&
-        (userInfo.id === instance?.case_creator?.id ||
-          userInfo.id === instance?.case_assistant?.id)
+        (userInfo.credentials["registrar"] || userInfo.credentials["clinician"]) &&
+        (userInfo.id === instance?.case_creator?.id || userInfo.id === instance?.case_assistant?.id)
       ) {
         return (
-          <Button
-            disabled={false}
-            variant="contained"
-            type="submit"
-            color="primary"
-          >
+          <Button disabled={false} variant="contained" type="submit" color="primary">
             Исправить кейс
           </Button>
         );
@@ -349,33 +327,36 @@ function UpdateForm({ history, match }) {
     }
   }
 
+  // Decline Dialogue Choice
+  function DeclineButtonChoice() {
+    if (instance) {
+      if (userInfo.id === instance?.case_editor?.id) {
+        return (
+          <Button color="primary" onClick={handleOpenDeclineDialog} variant="contained">
+            Отказ кейса
+          </Button>
+        );
+      } else {
+        return null;
+      }
+    }
+  }
+
   // Delete button control
   function DeleteButtonChoice() {
     if (instance) {
-      if (
-        userInfo.credentials["pathologist"] &&
-        userInfo.id === instance?.case_editor?.id
-      ) {
+      if (userInfo.id === instance?.case_editor?.id) {
         return (
-          <Button
-            color="secondary"
-            onClick={handleOpenDeleteAlert}
-            variant="contained"
-          >
+          <Button color="secondary" onClick={handleOpenDeleteDialog} variant="contained">
             Удалить кейс
           </Button>
         );
       } else if (
-        (userInfo.credentials["registrar"] ||
-          userInfo.credentials["clinician"]) &&
+        (userInfo.credentials["registrar"] || userInfo.credentials["clinician"]) &&
         userInfo.id === instance?.case_creator?.id
       ) {
         return (
-          <Button
-            color="secondary"
-            onClick={handleOpenDeleteAlert}
-            variant="contained"
-          >
+          <Button color="secondary" onClick={handleOpenDeleteDialog} variant="contained">
             Удалить кейс
           </Button>
         );
@@ -394,26 +375,13 @@ function UpdateForm({ history, match }) {
         <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
           <Card>
             <CardContent>
-              <Typography
-                className={classes.cardTitle}
-                color="textSecondary"
-                gutterBottom
-              >
+              <Typography className={classes.cardTitle} color="textSecondary" gutterBottom>
                 <strong>Форма заполнения</strong>
               </Typography>
-              <Grid
-                container
-                item
-                direction={"row"}
-                alignItems={"flex-start"}
-                justify={"flex-start"}
-              >
+              <Grid container item direction={"row"} alignItems={"flex-start"} justify={"flex-start"}>
                 <Grid container item xs={12} spacing={1}>
                   <Grid item md={4} sm={6} xs={12}>
-                    <MuiPickersUtilsProvider
-                      utils={DateFnsUtils}
-                      locale={ruLocale}
-                    >
+                    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
                       <Controller
                         name="dateDispatch"
                         control={control}
@@ -441,10 +409,7 @@ function UpdateForm({ history, match }) {
                     </MuiPickersUtilsProvider>
                   </Grid>
                   <Grid item md={4} sm={6} xs={12}>
-                    <MuiPickersUtilsProvider
-                      utils={DateFnsUtils}
-                      locale={ruLocale}
-                    >
+                    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
                       <Controller
                         name="dateAcquisition"
                         control={control}
@@ -486,11 +451,7 @@ function UpdateForm({ history, match }) {
                           label="Организация"
                           variant="outlined"
                           error={errors.institution ? true : false}
-                          helperText={
-                            errors?.institution
-                              ? errors.institution.message
-                              : `Code: ${field.value}`
-                          }
+                          helperText={errors?.institution ? errors.institution.message : `Code: ${field.value}`}
                         >
                           {INSTITUTION_CHOICES.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -519,37 +480,34 @@ function UpdateForm({ history, match }) {
                           color="primary"
                           variant="outlined"
                           error={errors.personalNumber ? true : false}
-                          helperText={
-                            errors?.personalNumber &&
-                            errors.personalNumber.message
-                          }
+                          helperText={errors?.personalNumber && errors.personalNumber.message}
                         />
                       )}
                     />
                   </Grid>
                   <Grid item md={6} sm={6} xs={12}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
-                  <Controller
-                    name="dateBirth"
-                    control={control}
-                    render={({ field: { ref, ...rest } }) => (
-                      <KeyboardDatePicker
-                        {...rest}
-                        fullWidth
-                        id="date-birth"
-                        label="Дата рождения"
-                        format="dd/MM/yyyy"
-                        maxDate={new Date()}
-                        variant="inline"
-                        inputVariant="outlined"
-                        KeyboardButtonProps={{
-                          "aria-label": "change date",
-                        }}
+                    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
+                      <Controller
+                        name="dateBirth"
+                        control={control}
+                        render={({ field: { ref, ...rest } }) => (
+                          <KeyboardDatePicker
+                            {...rest}
+                            fullWidth
+                            id="date-birth"
+                            label="Дата рождения"
+                            format="dd/MM/yyyy"
+                            maxDate={new Date()}
+                            variant="inline"
+                            inputVariant="outlined"
+                            KeyboardButtonProps={{
+                              "aria-label": "change date",
+                            }}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                </MuiPickersUtilsProvider>
-              </Grid>
+                    </MuiPickersUtilsProvider>
+                  </Grid>
                   <Grid item md={4} sm={4} xs={12}>
                     <Controller
                       name="lastName"
@@ -568,9 +526,7 @@ function UpdateForm({ history, match }) {
                           color="primary"
                           variant="outlined"
                           error={errors.lastName ? true : false}
-                          helperText={
-                            errors?.lastName && errors.lastName.message
-                          }
+                          helperText={errors?.lastName && errors.lastName.message}
                         />
                       )}
                     />
@@ -593,9 +549,7 @@ function UpdateForm({ history, match }) {
                           color="primary"
                           variant="outlined"
                           error={errors.firstName ? true : false}
-                          helperText={
-                            errors?.firstName && errors.firstName.message
-                          }
+                          helperText={errors?.firstName && errors.firstName.message}
                         />
                       )}
                     />
@@ -618,9 +572,7 @@ function UpdateForm({ history, match }) {
                           color="primary"
                           variant="outlined"
                           error={errors.middleName ? true : false}
-                          helperText={
-                            errors?.middleName && errors.middleName.message
-                          }
+                          helperText={errors?.middleName && errors.middleName.message}
                         />
                       )}
                     />
@@ -645,9 +597,7 @@ function UpdateForm({ history, match }) {
                           label="Диагноз"
                           variant="outlined"
                           error={errors.diagnosis ? true : false}
-                          helperText={
-                            errors?.diagnosis && errors.diagnosis.message
-                          }
+                          helperText={errors?.diagnosis && errors.diagnosis.message}
                         />
                       )}
                     />
@@ -658,9 +608,7 @@ function UpdateForm({ history, match }) {
                         <Autocomplete
                           id="caseEditor-id"
                           options={pathologists}
-                          getOptionLabel={(option) =>
-                            option.first_name + " " + option.last_name
-                          }
+                          getOptionLabel={(option) => option.first_name + " " + option.last_name}
                           // getOptionSelected={(option, value) => option.first_name === value.first_name}
                           filterSelectedOptions
                           value={caseEditor} // value is passed by render from the Controller
@@ -705,9 +653,7 @@ function UpdateForm({ history, match }) {
                           label="Направивший врач"
                           variant="outlined"
                           error={errors.doctorSender ? true : false}
-                          helperText={
-                            errors?.doctorSender && errors.doctorSender.message
-                          }
+                          helperText={errors?.doctorSender && errors.doctorSender.message}
                         />
                       )}
                     />
@@ -718,9 +664,7 @@ function UpdateForm({ history, match }) {
                       defaultValue={[]}
                       multiple
                       options={consultants}
-                      getOptionLabel={(option) =>
-                        option.first_name + " " + option.last_name
-                      }
+                      getOptionLabel={(option) => option.first_name + " " + option.last_name}
                       // getOptionSelected={(option, value) => option.first_name === value.first_name}
                       filterSelectedOptions
                       value={caseConsultantsValues} // value is passed by render from the Controller
@@ -735,7 +679,7 @@ function UpdateForm({ history, match }) {
                           required
                           inputProps={{
                             ...params.inputProps,
-                            required: consultants.length === 0
+                            required: consultants.length === 0,
                           }}
                           label="Консультанты"
                           name="consultants"
@@ -748,14 +692,7 @@ function UpdateForm({ history, match }) {
                   </Grid>
                 </Grid>
                 <hr />
-                <Grid
-                  container
-                  item
-                  direction={"row"}
-                  alignItems={"flex-start"}
-                  justify={"flex-start"}
-                  spacing={1}
-                >
+                <Grid container item direction={"row"} alignItems={"flex-start"} justify={"flex-start"} spacing={1}>
                   <Grid container item xs={12}>
                     <Grid item xs={6}>
                       Блоки
@@ -774,16 +711,11 @@ function UpdateForm({ history, match }) {
                             name="blockCode"
                             label="Блок"
                             value={item.blockCode}
-                            onChange={(event) =>
-                              handleBlockListChange(event, index)
-                            }
+                            onChange={(event) => handleBlockListChange(event, index)}
                           />
 
                           {blockCodeList.length !== 1 && (
-                            <Button
-                              type="button"
-                              onClick={() => handleRemoveBlock(index)}
-                            >
+                            <Button type="button" onClick={() => handleRemoveBlock(index)}>
                               Удалить
                             </Button>
                           )}
@@ -817,9 +749,7 @@ function UpdateForm({ history, match }) {
                               label="Кол. блоков"
                               variant="outlined"
                               error={errors.blockCount ? true : false}
-                              helperText={
-                                errors?.blockCount && errors.blockCount.message
-                              }
+                              helperText={errors?.blockCount && errors.blockCount.message}
                             />
                           )}
                         />
@@ -836,15 +766,10 @@ function UpdateForm({ history, match }) {
                             name="slideCode"
                             label="Блок"
                             value={item.slideCode}
-                            onChange={(event) =>
-                              handleSlideListChange(event, index)
-                            }
+                            onChange={(event) => handleSlideListChange(event, index)}
                           />
                           {slideCodeList.length !== 1 && (
-                            <Button
-                              type="button"
-                              onClick={() => handleRemoveSlide(index)}
-                            >
+                            <Button type="button" onClick={() => handleRemoveSlide(index)}>
                               Удалить
                             </Button>
                           )}
@@ -877,9 +802,7 @@ function UpdateForm({ history, match }) {
                               label="Кол. слайдов"
                               variant="outlined"
                               error={errors.slideCount ? true : false}
-                              helperText={
-                                errors?.slideCount && errors.slideCount.message
-                              }
+                              helperText={errors?.slideCount && errors.slideCount.message}
                             />
                           )}
                         />
@@ -892,11 +815,7 @@ function UpdateForm({ history, match }) {
                   userInfo?.credentials["pathologist"] &&
                   userInfo.id === instance?.case_editor?.id ? (
                     <React.Fragment>
-                      <Typography
-                        className={classes.cardTitle}
-                        color="textSecondary"
-                        gutterBottom
-                      >
+                      <Typography className={classes.cardTitle} color="textSecondary" gutterBottom>
                         <strong>Форма заключения</strong>
                       </Typography>
                       <Grid container spacing={1}>
@@ -919,22 +838,13 @@ function UpdateForm({ history, match }) {
                                 // value={clinicalInterpretation}
                                 defaultValue={""}
                                 variant="outlined"
-                                error={
-                                  errors.clinicalInterpretation ? true : false
-                                }
-                                helperText={
-                                  errors?.clinicalInterpretation &&
-                                  errors.clinicalInterpretation.message
-                                }
+                                error={errors.clinicalInterpretation ? true : false}
+                                helperText={errors?.clinicalInterpretation && errors.clinicalInterpretation.message}
 
                                 // onChange={(event) => setclinicalInterpretation(event.target.value)}
                               >
-                                <MenuItem value={"PD-L1 позитивный"}>
-                                  PD-L1 позитивный
-                                </MenuItem>
-                                <MenuItem value={"PD-L1 негативный"}>
-                                  PD-L1 негативный
-                                </MenuItem>
+                                <MenuItem value={"PD-L1 позитивный"}>PD-L1 позитивный</MenuItem>
+                                <MenuItem value={"PD-L1 негативный"}>PD-L1 негативный</MenuItem>
                               </TextField>
                             )}
                           />
@@ -962,13 +872,8 @@ function UpdateForm({ history, match }) {
                                 }}
                                 label="Показатель экспрессии PD-L1 опухолевыми клетками"
                                 variant="outlined"
-                                error={
-                                  errors.immuneCellPercentage ? true : false
-                                }
-                                helperText={
-                                  errors?.immuneCellPercentage &&
-                                  errors.immuneCellPercentage.message
-                                }
+                                error={errors.immuneCellPercentage ? true : false}
+                                helperText={errors?.immuneCellPercentage && errors.immuneCellPercentage.message}
                               />
                             )}
                           />
@@ -996,22 +901,14 @@ function UpdateForm({ history, match }) {
                                 }}
                                 label="Показатель экспрессии PD-L1 иммунными клетками"
                                 variant="outlined"
-                                error={
-                                  errors.cancerCellPercentage ? true : false
-                                }
-                                helperText={
-                                  errors?.cancerCellPercentage &&
-                                  errors.cancerCellPercentage.message
-                                }
+                                error={errors.cancerCellPercentage ? true : false}
+                                helperText={errors?.cancerCellPercentage && errors.cancerCellPercentage.message}
                               />
                             )}
                           />
                         </Grid>
                         <Grid item md={4} s={4} xs={4}>
-                          <MuiPickersUtilsProvider
-                            utils={DateFnsUtils}
-                            locale={ruLocale}
-                          >
+                          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
                             <Controller
                               name="dateReport"
                               control={control}
@@ -1060,49 +957,19 @@ function UpdateForm({ history, match }) {
             </Box>
             <Grid container spacing={1}>
               <Grid item>
-                <ButtonChoice />
+                <UpdateButtonChoice />
               </Grid>
-
+              <Grid item>
+                <DeclineButtonChoice />
+                <DialogDecline
+                  instance={instance}
+                  openDialog={openDeclineDialog}
+                  setOpenDialog={setOpenDeclineDialog}
+                />
+              </Grid>
               <Grid item>
                 <DeleteButtonChoice />
-                <div>
-                  <Dialog
-                    open={openDeleteAlert}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle
-                      className={classes.alertTitle}
-                      id="alert-dialog-title"
-                    >
-                      Предупреждение
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Данное оповещение предназначено для защиты от случайного
-                        удаления объекта. Вы уверены что хотите удалить данный
-                        кейс?
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button
-                        variant="outlined"
-                        onClick={handleCloseDeleteAlert}
-                        color="primary"
-                      >
-                        Не согласен
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        onClick={deleteCase}
-                        color="primary"
-                        autoFocus
-                      >
-                        Согласен
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                </div>
+                <DialogDelete instance={instance} openDialog={openDeleteDialog} setOpenDialog={setOpenDeleteDialog} />
               </Grid>
             </Grid>
           </Card>

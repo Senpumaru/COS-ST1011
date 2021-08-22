@@ -172,10 +172,10 @@ function CreationForm() {
     data["slideCodes"] = data["slideCodes"].map((a) => a.slideCode);
 
     dispatch(createCase(data));
-    console.log(data);
+
     setTimeout(() => {
       setOpenAlert(false);
-    }, 6000);
+    }, 4000);
   };
 
   return (
@@ -401,7 +401,7 @@ function CreationForm() {
                   )}
                 />
               </Grid>
-              <Grid item md={12} sm={8} xs={12}>
+              <Grid item md={12} sm={12} xs={12}>
                 <Controller
                   name="diagnosis"
                   control={control}

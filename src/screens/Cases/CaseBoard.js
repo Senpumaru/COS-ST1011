@@ -64,13 +64,19 @@ function Dashboard() {
 
   /* Table Search */
   useEffect(() => {
+    var dateRegGTE;
+    if (filters.dateAcquisitionGTE === null) {
+      dateRegGTE = filters.dateAcquisitionGTE;
+    } else {
+      dateRegGTE = filters.dateAcquisitionGTE.toISOString().split("T")[0];
+    }
     dispatch(
       listCases(
         page,
         pageSize,
         sortColumn,
-        filters.dateRegisterGTE.toISOString().split("T")[0],
-        filters.dateRegisterLTE.toISOString().split("T")[0],
+        dateRegGTE,
+        filters.dateAcquisitionLTE.toISOString().split("T")[0],
         filters.institution
       )
     );
@@ -97,14 +103,14 @@ function Dashboard() {
         <TabList onChange={handleTabValue} aria-label="Menu">
           <Tab label="Кейсы" value="Cases" />
           <Tab label="Статистика" value="Statistics" />
-          {/* <Tab
+          <Tab
             label={
-              <Badge color="secondary" badgeContent={22}>
+              <Badge color="secondary" badgeContent={0}>
                 Личный кабинет
               </Badge>
             }
             value="Cabinet"
-          /> */}
+          />
         </TabList>
         <TabPanel value="Cases">
           <CreationFormAccess />

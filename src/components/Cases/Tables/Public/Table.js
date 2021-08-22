@@ -74,7 +74,10 @@ function CaseTable() {
                   >
                     Интрепретация
                   </TableCell>
-                  <TableCell padding="none" align="left">
+                  <TableCell padding="none" align="center">
+                    Статус
+                  </TableCell>
+                  <TableCell padding="none" align="center">
                     Действия
                   </TableCell>
                 </TableRow>
