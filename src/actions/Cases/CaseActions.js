@@ -68,10 +68,7 @@ export const createCase = (instance) => async (dispatch, getState) => {
     setTimeout(() => {
       dispatch({
         type: CASE_CREATE_FAIL,
-        payload:
-          error.response && error.response.data.Detail
-            ? error.response.data.Detail
-            : error.message,
+        payload: error.response && error.response.data.Detail ? error.response.data.Detail : error.message,
       });
     }, 1000);
   }
@@ -105,10 +102,7 @@ export const caseDetailsAction = (id) => async (dispatch, getState) => {
     setTimeout(() => {
       dispatch({
         type: CASE_DETAILS_FAIL,
-        payload:
-          error.response && error.response.data.Detail
-            ? error.response.data.Detail
-            : error.message,
+        payload: error.response && error.response.data.Detail ? error.response.data.Detail : error.message,
       });
     }, 2000);
   }
@@ -129,11 +123,7 @@ export const caseTransferAction = (instance) => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.put(
-      SERVER_URL + `api/ST1011/cases/${instance.uuid}/transfer/`,
-      instance,
-      config
-    );
+    const { data } = await axios.put(SERVER_URL + `api/ST1011/cases/${instance.uuid}/transfer/`, instance, config);
 
     setTimeout(() => {
       dispatch({
@@ -145,55 +135,44 @@ export const caseTransferAction = (instance) => async (dispatch, getState) => {
     setTimeout(() => {
       dispatch({
         type: CASE_TRANSFER_FAIL,
-        payload:
-          error.response && error.response.data.Detail
-            ? error.response.data.Detail
-            : error.message,
+        payload: error.response && error.response.data.Detail ? error.response.data.Detail : error.message,
       });
     }, 2000);
   }
 };
 
-export const approvalUpdateAction =
-  (instance) => async (dispatch, getState) => {
-    try {
+export const approvalUpdateAction = (instance) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: APPROVAL_UPDATE_REQUEST,
+    });
+
+    const state = getState();
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${state["Profile"].userLogin["userInfo"].access}`,
+      },
+    };
+
+    const { data } = await axios.put(SERVER_URL + `api/ST1011/approval/${instance.id}/update/`, instance, config);
+
+    setTimeout(() => {
       dispatch({
-        type: APPROVAL_UPDATE_REQUEST,
+        type: APPROVAL_UPDATE_SUCCESS,
+        payload: data,
       });
-
-      const state = getState();
-
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${state["Profile"].userLogin["userInfo"].access}`,
-        },
-      };
-
-      const { data } = await axios.put(
-        SERVER_URL + `api/ST1011/approval/${instance.id}/update/`,
-        instance,
-        config
-      );
-
-      setTimeout(() => {
-        dispatch({
-          type: APPROVAL_UPDATE_SUCCESS,
-          payload: data,
-        });
-      }, 1000);
-    } catch (error) {
-      setTimeout(() => {
-        dispatch({
-          type: APPROVAL_UPDATE_FAIL,
-          payload:
-            error.response && error.response.data.Detail
-              ? error.response.data.Detail
-              : error.message,
-        });
-      }, 2000);
-    }
-  };
+    }, 1000);
+  } catch (error) {
+    setTimeout(() => {
+      dispatch({
+        type: APPROVAL_UPDATE_FAIL,
+        payload: error.response && error.response.data.Detail ? error.response.data.Detail : error.message,
+      });
+    }, 2000);
+  }
+};
 
 export const caseUpdateAction = (instance) => async (dispatch, getState) => {
   try {
@@ -210,11 +189,7 @@ export const caseUpdateAction = (instance) => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.put(
-      SERVER_URL + `api/ST1011/cases/${instance.uuid}/update/`,
-      instance,
-      config
-    );
+    const { data } = await axios.put(SERVER_URL + `api/ST1011/cases/${instance.uuid}/update/`, instance, config);
     setTimeout(() => {
       dispatch({
         type: CASE_UPDATE_SUCCESS,
@@ -235,10 +210,7 @@ export const caseUpdateAction = (instance) => async (dispatch, getState) => {
     setTimeout(() => {
       dispatch({
         type: CASE_UPDATE_FAIL,
-        payload:
-          error.response && error.response.data.Detail
-            ? error.response.data.Detail
-            : error.message,
+        payload: error.response && error.response.data.Detail ? error.response.data.Detail : error.message,
       });
     }, 2000);
   }
@@ -259,11 +231,7 @@ export const caseDeclineAction = (instance) => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.put(
-      SERVER_URL + `api/ST1011/cases/${instance.uuid}/update/`,
-      instance,
-      config
-    );
+    const { data } = await axios.put(SERVER_URL + `api/ST1011/cases/${instance.uuid}/decline/`, instance, config);
     setTimeout(() => {
       dispatch({
         type: CASE_DECLINE_SUCCESS,
@@ -271,17 +239,11 @@ export const caseDeclineAction = (instance) => async (dispatch, getState) => {
       });
     }, 1000);
 
-    dispatch({
-      type: CASE_DETAILS_RESET,
-    });
   } catch (error) {
     setTimeout(() => {
       dispatch({
         type: CASE_DECLINE_FAIL,
-        payload:
-          error.response && error.response.data.Detail
-            ? error.response.data.Detail
-            : error.message,
+        payload: error.response && error.response.data.Detail ? error.response.data.Detail : error.message,
       });
     }, 2000);
   }
@@ -302,27 +264,19 @@ export const caseAddendumAction = (uuid) => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.put(
-      SERVER_URL + `api/ST1011/cases/${uuid}/addendum/`,
-      uuid,
-      config
-    );
-    
+    const { data } = await axios.put(SERVER_URL + `api/ST1011/cases/${uuid}/addendum/`, uuid, config);
+
     setTimeout(() => {
       dispatch({
         type: CASE_ADDENDUM_SUCCESS,
         payload: data,
       });
     }, 1000);
-
   } catch (error) {
     setTimeout(() => {
       dispatch({
         type: CASE_ADDENDUM_FAIL,
-        payload:
-          error.response && error.response.data.Detail
-            ? error.response.data.Detail
-            : error.message,
+        payload: error.response && error.response.data.Detail ? error.response.data.Detail : error.message,
       });
     }, 2000);
   }
@@ -351,10 +305,7 @@ export const caseDeleteAction = (id) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: CASE_DELETE_FAIL,
-      payload:
-        error.response && error.response.data.detail
-          ? error.response.data.detail
-          : error.message,
+      payload: error.response && error.response.data.detail ? error.response.data.detail : error.message,
     });
   }
 };
@@ -421,10 +372,7 @@ export const listCases = (
     } catch (error) {
       dispatch({
         type: CASE_LIST_FAIL,
-        payload:
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message,
+        payload: error.response && error.response.data.message ? error.response.data.message : error.message,
       });
     }
   };
@@ -462,10 +410,7 @@ export const statisticsCases = () => {
     } catch (error) {
       dispatch({
         type: CASE_STATISTICS_FAIL,
-        payload:
-          error.response && error.response.data.detail
-            ? error.response.data.message
-            : error.message,
+        payload: error.response && error.response.data.detail ? error.response.data.message : error.message,
       });
     }
   };

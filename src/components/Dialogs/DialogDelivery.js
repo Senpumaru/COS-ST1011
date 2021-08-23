@@ -52,7 +52,6 @@ function DialogDelivery(props) {
     deliveryError,
     setDeliveryError,
     // Data
-    code: code,
     number: number,
   } = props;
 
@@ -81,7 +80,7 @@ function DialogDelivery(props) {
     data["editorEmail"] = userInfo.email;
 
     try {
-      axios.post(SERVER_URL + `api/ST1011/cases/${code}/${number}/delivery/`, data, config).then(function (response) {
+      axios.post(SERVER_URL + `api/ST1011/cases/${number}/delivery/`, data, config).then(function (response) {
         setDeliverySuccess(true);
         setOpenDeliveryDialog(false);
       });

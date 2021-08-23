@@ -11,8 +11,9 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -69,6 +70,22 @@ function DialogDecline(props) {
     reset,
   } = useForm();
 
+  const [caseConsultantsValues, setConsultantsValues] = useState([]);
+  const [consultants, setConsultants] = useState([]);
+
+  useEffect(async () => {
+    const fetchData = async () => {
+      const consultants = await axios(SERVER_URL + `api/ST1011/consultants`);
+
+      setConsultants(
+        consultants.data.map(function (item) {
+          return item.user;
+        })
+      );
+    };
+    fetchData();
+  }, []);
+
   /** Case Decline **/
   // Close Dialog
   const handleCloseDialog = () => {
@@ -104,12 +121,23 @@ function DialogDecline(props) {
     },
   ];
   const [declineReason, setDeclineReason] = useState("");
+  const handleChange = (event) => {
+    setDeclineReason(event.target.value);
+  };
 
   const declineCase = () => {
     const data = {};
+    data["uuid"] = instance.uuid;
     data["declineReason"] = declineReason;
+    data["caseConsultants"] = caseConsultantsValues;
+    if (data["caseConsultants"]) {
+      data["caseConsultants"] = data["caseConsultants"].map((a) => a.id);
+    } else {
+      data["caseConsultants"] = [];
+    }
+    console.log(data);
     dispatch(caseDeclineAction(data));
-    history.push("/ST1011");
+    // history.push("/ST1011");
   };
 
   return (
@@ -124,41 +152,72 @@ function DialogDecline(props) {
           </Typography>
           <br />
           Данное решение приведет к отказу кейса. Укажите причину отказа, для последующего оформления.
-          <Grid item md={12} sm={12} xs={12}>
-            <Controller
-              name="declineReason"
-              control={control}
-              defaultValue={false}
-              rules={{
-                required: "Укажите причину отказа",
-              }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  select
-                  label="Причина"
-                  variant="outlined"
-                  error={errors.declineReason ? true : false}
-                  helperText={errors?.declineReason ? errors.declineReason.message : null}
-                >
-                  {DECLINE_CHOICES.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            />
+          <Grid container spacing={2}>
+            <Grid item md={12} sm={12} xs={12}>
+              <TextField
+                fullWidth
+                select
+                value={declineReason ? declineReason : ""}
+                onChange={handleChange}
+                defaultValue=""
+                label="Причина"
+                variant="outlined"
+                error={errors.declineReason ? true : false}
+                helperText={errors?.declineReason ? errors.declineReason.message : null}
+              >
+                {DECLINE_CHOICES.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            {instance?.case_consultants?.length > 0 ? null : (
+              <Grid item md={12} sm={12} xs={12}>
+                <Typography component={"span"}>
+                  Для кейса оствутсвутют присовенные коснультанты. Укажите коснульантов для последующего оформления.
+                </Typography>
+                <Autocomplete
+                  id="consultants-id"
+                  defaultValue={[]}
+                  multiple
+                  options={consultants}
+                  getOptionLabel={(option) => option.first_name + " " + option.last_name}
+                  // getOptionSelected={(option, value) => option.first_name === value.first_name}
+                  filterSelectedOptions
+                  value={caseConsultantsValues} // value is passed by render from the Controller
+                  onChange={(event, value) => setConsultantsValues(value)} // instead here the docs said to do: onChange={e => props.onChange(e.target.checked)}
+                  // inputValue={consultantValue}
+                  // onInputChange={(event, newConsultantValue) => {
+                  // setConsultantValue(newConsultantValue);
+                  // }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      required
+                      inputProps={{
+                        ...params.inputProps,
+                        required: consultants.length === 0,
+                      }}
+                      label="Консультанты"
+                      name="consultants"
+                      placeholder="Выбрать консультантов"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
+                />
+              </Grid>
+            )}
           </Grid>
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" onClick={handleCloseDialog} color="primary">
-          Не согласен
+          Отмена
         </Button>
         <Button variant="outlined" onClick={declineCase} color="primary" autoFocus>
-          Согласен
+          Подтвердить
         </Button>
       </DialogActions>
     </Dialog>

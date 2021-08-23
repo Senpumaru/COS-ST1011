@@ -100,13 +100,13 @@ function RowExpansion(props) {
   } else {
     editorExists = false;
   }
+  
   // Access
   var editingAction = false;
-  if (row?.version_state === "In-progress") {
-    if (userInfo["credentials"]["pathologist"] === true && editorExists === true && approvalsTrue != true) {
+  if (row?.version_state === "In-progress" && row.decline_status === false) {
+    if (editorExists === true && approvalsTrue != true) {
       editingAction = true;
     } else if (
-      userInfo["credentials"]["registrar"] === true &&
       (userInfo.id === row?.case_creator?.id || userInfo.id === row?.case_assistant?.id) &&
       row?.clinical_interpretation === null
     ) {
@@ -123,6 +123,7 @@ function RowExpansion(props) {
   } else {
     editingAction = false;
   }
+  
 
   /** Case Approval **/
   // Access
@@ -139,6 +140,7 @@ function RowExpansion(props) {
       approvalsTrue = false;
     }
   }
+
   // State
   const [openApprovalDialog, setOpenApprovalDialog] = useState(false);
   // Open Dialogue
@@ -211,7 +213,7 @@ function RowExpansion(props) {
             </TableCell>
 
             <TableCell className={classes.tableCell} style={{ width: "14%" }} align="left">
-            <Grid container direction="row" justify="center" alignItems="center" spacing={0}>
+              <Grid container direction="row" justify="center" alignItems="center" spacing={0}>
                 <Grid item>
                   {row.case_approvals.map((a) => a.consultant).includes(userInfo.id) &&
                     row.clinical_interpretation != null &&
@@ -271,7 +273,7 @@ function RowExpansion(props) {
                     <div></div>
                   )}
                 </Grid>
-               {
+                {
                   // Objective: CASE Transfer
                   // Rule: CASE CREATOR exists
                   row.case_creator && (
@@ -284,14 +286,17 @@ function RowExpansion(props) {
                     />
                   )
                 }
-                 <Grid item>
-                  {editingAction && (
-                    <Tooltip title="Обновить" aria-label="edit">
-                      <IconButton className={classes.tableButton} component={Link} to={`/ST1011/Case/${row.uuid}`}>
-                        <FontAwesomeIcon className={classes.icons} icon={faEdit} />
-                      </IconButton>
-                    </Tooltip>
-                  )}
+                <Grid item>
+                  {
+                    // Objective: CASE Edit
+                    editingAction && (
+                      <Tooltip title="Обновить" aria-label="edit">
+                        <IconButton className={classes.tableButton} component={Link} to={`/ST1011/Case/${row.uuid}`}>
+                          <FontAwesomeIcon className={classes.icons} icon={faEdit} />
+                        </IconButton>
+                      </Tooltip>
+                    )
+                  }
                 </Grid>
 
                 <Grid item>
@@ -313,7 +318,7 @@ function RowExpansion(props) {
                     <IconButton
                       className={classes.tableButton}
                       component={Link}
-                      to={`/ST1011/Case/${row.institution_code}/${row.order_number}/Archive/`}
+                      to={`/ST1011/Case/${row.personal_number}/Archive/`}
                     >
                       <FontAwesomeIcon className={classes.icons} icon={faMailBulk} />
                     </IconButton>
