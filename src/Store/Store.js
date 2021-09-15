@@ -1,12 +1,9 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import thunk from "redux-thunk"
-import { userLoginReducer, userRegisterReducer } from './reducers/Accounts/UserReducers'
-import { approvalUpdateReducer, caseCreateReducer, caseDetailsReducer, caseAddendumReducer, caseListReducer, caseStatisticsReducer, caseTransferReducer, caseUpdateReducer, caseDeclineReducer } from './reducers/Cases/CaseReducers'
-import { searchReducer } from "./reducers/Cases/SearchReducers"
-
-
-
+import { userLoginReducer, userRegisterReducer } from '../reducers/Accounts/UserReducers'
+import { approvalUpdateReducer, caseCreateReducer, caseDetailsReducer, caseAddendumReducer, caseListReducer, caseStatisticsReducer, caseTransferReducer, caseUpdateReducer, caseDeclineReducer } from '../reducers/Cases/CaseReducers'
+import { searchReducer } from "../reducers/Cases/SearchReducers"
 
 /*** All reducers ***/
 const reducer = combineReducers({
